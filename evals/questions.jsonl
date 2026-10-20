@@ -1,0 +1,20 @@
+{"id":"rsoac-cap","question":"What is the most our RSO can get from RSOAC for the whole 2026-27 year?","answerable":true,"expected_section":"Allocation Committee","must_include":["5,776"],"verified":false}
+{"id":"rsoac-travel-per-student","question":"How much travel money can RSOAC give per student?","answerable":true,"expected_section":"Allocation Committee","must_include":["250"],"verified":false}
+{"id":"rsoac-request-limit","question":"Is there a limit on how many times we can request from RSOAC?","answerable":true,"expected_section":"Allocation Committee","must_include":["no limit"],"verified":false}
+{"id":"rsoac-quotes","question":"How many quotes do we need for an item over $1,000 in an RSOAC request?","answerable":true,"expected_section":"Allocation Committee","must_include":["three"],"verified":false}
+{"id":"rsoac-presentation","question":"How long can our recorded RSOAC presentation be?","answerable":true,"expected_section":"Allocation Committee","must_include":["5 minutes"],"verified":false}
+{"id":"rsoac-receipts","question":"After an RSOAC-funded event, when are receipts due?","answerable":true,"expected_section":"Allocation Committee","must_include":["10 business days"],"verified":false}
+{"id":"rsoac-grad-eligibility","question":"Our organization is mostly graduate students. Can we apply to RSOAC?","answerable":true,"expected_section":"","must_include":["50%"],"verified":false}
+{"id":"dev-fund-amount","question":"How much is the RSO Development Fund and how often can we get it?","answerable":true,"expected_section":"Development Fund","must_include":["300","once per fiscal year"],"verified":false}
+{"id":"food-small-meeting","question":"Can we use SGA funds to buy food for an officer meeting with 6 people?","answerable":true,"expected_section":"Prohibited Purchases","must_include":["10"],"verified":false}
+{"id":"tips-cap","question":"What is the maximum tip or service charge SGA will pay?","answerable":true,"expected_section":"Prohibited Purchases","must_include":["15%"],"verified":false}
+{"id":"personal-card","question":"Can I pay with my personal debit card and get reimbursed later?","answerable":true,"expected_section":"Prohibited Purchases","must_include":["personal"],"verified":false}
+{"id":"travel-deadline","question":"How far ahead do travel requests need to be approved in FSU HQ?","answerable":true,"expected_section":"General Requirements","must_include":["30 days"],"verified":false}
+{"id":"hotel-rate","question":"What is the maximum hotel rate per night, and how many people per room?","answerable":true,"expected_section":"LODGING","must_include":["225","four"],"verified":false}
+{"id":"uber","question":"Will SGA reimburse Uber or Lyft rides on a trip?","answerable":true,"expected_section":"Rental Vehicle","must_include":["not eligible"],"verified":false}
+{"id":"international-lead-time","question":"How early do we need to start working with SGA Accounting for an international trip?","answerable":true,"expected_section":"International Travel","must_include":["sixty"],"verified":false}
+{"id":"as-fee","question":"How much is the Activity and Service fee per credit hour?","answerable":true,"expected_section":"A&S Fees","must_include":["12.86"],"verified":false}
+{"id":"off-campus-signers","question":"Can our advisor be a signer on our off-campus bank account?","answerable":true,"expected_section":"Off-Campus Bank Accounts","must_include":["cannot"],"verified":false}
+{"id":"unanswerable-parking","question":"Can SGA pay for parking passes for our members for the semester?","answerable":false,"expected_section":"","must_include":[],"verified":false}
+{"id":"unanswerable-other-school","question":"What is the RSO funding cap at the University of Florida?","answerable":false,"expected_section":"","must_include":[],"verified":false}
+{"id":"unanswerable-meeting-date","question":"When is the next RSOAC committee meeting?","answerable":false,"expected_section":"","must_include":[],"verified":false}

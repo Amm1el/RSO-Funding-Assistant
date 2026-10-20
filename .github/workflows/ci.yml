@@ -1,0 +1,69 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: rso
+          POSTGRES_PASSWORD: rso
+          POSTGRES_DB: rso_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U rso" --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      TEST_DATABASE_URL: postgres://rso:rso@localhost:5432/rso_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Download the 2026-27 manual (enables the real-manual integration test)
+        run: curl -fsSL -o data/26-27SGAFM.pdf https://sga.fsu.edu/sites/default/files/PDFs/Accounting/26-27SGAFM.pdf || echo "Manual download failed; that test will be skipped."
+      - run: npm run typecheck
+      - run: npm test
+
+  # Full answer-quality eval: real embeddings + Claude. Runs only when API keys are configured.
+  eval:
+    needs: test
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: rso
+          POSTGRES_PASSWORD: rso
+          POSTGRES_DB: rso
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U rso" --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      DATABASE_URL: postgres://rso:rso@localhost:5432/rso
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: curl -fsSL -o data/26-27SGAFM.pdf https://sga.fsu.edu/sites/default/files/PDFs/Accounting/26-27SGAFM.pdf
+      - run: npm run ingest -- data/26-27SGAFM.pdf
+      - run: npm run eval -- --min-pass 80
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: eval-results
+          path: evals/results/
