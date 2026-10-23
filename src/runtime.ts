@@ -1,4 +1,4 @@
-import type pg from "pg";
+import type { DbPool } from "./dbpool.js";
 import { config } from "./config.js";
 import { getActiveDocument, type DocumentInfo } from "./db.js";
 import { embedderByName } from "./embeddings.js";
@@ -25,7 +25,7 @@ export function allowedProviders(): string[] {
   return config.USE_AI && config.OPENAI_API_KEY ? ["openai", "hash"] : ["hash"];
 }
 
-export async function createDeps(pool: pg.Pool, generator: GeneratorChoice = "auto"): Promise<Deps & { document: DocumentInfo }> {
+export async function createDeps(pool: DbPool, generator: GeneratorChoice = "auto"): Promise<Deps & { document: DocumentInfo }> {
   const document = await getActiveDocument(pool, allowedProviders());
   if (!document) {
     throw new Error(

@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { existsSync } from "node:fs";
-import type pg from "pg";
+import type { DbPool } from "../src/dbpool.js";
 import { createPool, getActiveDocument, migrate, saveDocument, searchChunks } from "../src/db.js";
 import { HashEmbedder } from "../src/embeddings.js";
 import { readPdfPages } from "../src/ingest/pdf.js";
@@ -8,11 +8,12 @@ import { chunkPages, parseTableOfContents } from "../src/ingest/chunk.js";
 import { retrieve } from "../src/pipeline.js";
 import type { Chunk } from "../src/types.js";
 
-// Runs against a real Postgres + pgvector. Locally: TEST_DATABASE_URL=postgres://rso:rso@localhost:5432/rso_test npm test
-const url = process.env.TEST_DATABASE_URL;
+// Runs against a real Postgres + pgvector when TEST_DATABASE_URL is set (CI does this),
+// otherwise against embedded PGlite in memory, so these tests always run.
+const url = process.env.TEST_DATABASE_URL ?? "pglite://memory";
 
-describe.skipIf(!url)("Postgres + pgvector", () => {
-  let pool: pg.Pool;
+describe(`Postgres + pgvector (${url.split(":")[0]})`, () => {
+  let pool: DbPool;
   const embedder = new HashEmbedder();
 
   beforeAll(async () => {

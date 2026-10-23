@@ -2,6 +2,7 @@ node_modules/
 web/dist/
 .env
 data/*.pdf
+data/pglite/
 evals/results/
 .DS_Store
 *.log

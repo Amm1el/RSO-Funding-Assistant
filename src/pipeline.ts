@@ -1,11 +1,11 @@
-import type pg from "pg";
+import type { DbPool } from "./dbpool.js";
 import { keywordSearch, searchChunks } from "./db.js";
 import type { Embedder } from "./embeddings.js";
 import { finalizeAnswer, type AnswerGenerator } from "./answer.js";
 import type { Answer, RetrievedChunk } from "./types.js";
 
 export interface Deps {
-  pool: pg.Pool;
+  pool: DbPool;
   /** The ingested manual to answer from. */
   documentId: number;
   embedder: Embedder;

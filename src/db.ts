@@ -1,14 +1,16 @@
 import { readFile } from "node:fs/promises";
-import pg from "pg";
 import { toSql } from "pgvector";
 import { config } from "./config.js";
+import { createDbPool, type DbPool } from "./dbpool.js";
 import type { Chunk, RetrievedChunk } from "./types.js";
 
-export function createPool(connectionString = config.DATABASE_URL): pg.Pool {
-  return new pg.Pool({ connectionString });
+export type { DbPool } from "./dbpool.js";
+
+export function createPool(connectionString = config.DATABASE_URL): DbPool {
+  return createDbPool(connectionString);
 }
 
-export async function migrate(pool: pg.Pool): Promise<void> {
+export async function migrate(pool: DbPool): Promise<void> {
   const sql = await readFile(new URL("../db/schema.sql", import.meta.url), "utf8");
   await pool.query(sql);
 }
@@ -23,7 +25,7 @@ export interface DocumentInfo {
 
 /** Replaces any previous ingest of the same title, version and embedder in one transaction. */
 export async function saveDocument(
-  pool: pg.Pool,
+  pool: DbPool,
   doc: { title: string; version: string; sourceFile: string; embedder: string },
   chunks: Chunk[],
   embeddings: number[][],
@@ -61,7 +63,7 @@ export async function saveDocument(
  * allowed in the current mode, most preferred first (e.g. ["openai", "hash"]); within a
  * provider, the most recent ingest wins.
  */
-export async function getActiveDocument(pool: pg.Pool, providers: string[] = ["hash"]): Promise<DocumentInfo | null> {
+export async function getActiveDocument(pool: DbPool, providers: string[] = ["hash"]): Promise<DocumentInfo | null> {
   const { rows } = await pool.query(
     `SELECT d.id, d.title, d.version, d.embedder, count(c.id)::int AS chunks
        FROM documents d JOIN chunks c ON c.document_id = d.id
@@ -89,7 +91,7 @@ function toChunk(r: Record<string, unknown>, similarity: number): RetrievedChunk
 }
 
 /** Top-k chunks by cosine similarity (pgvector's <=> is cosine distance). */
-export async function searchChunks(pool: pg.Pool, documentId: number, queryEmbedding: number[], k: number): Promise<RetrievedChunk[]> {
+export async function searchChunks(pool: DbPool, documentId: number, queryEmbedding: number[], k: number): Promise<RetrievedChunk[]> {
   const { rows } = await pool.query(
     `SELECT ${COLUMNS}, 1 - (embedding <=> $1::vector) AS similarity
        FROM chunks
@@ -106,7 +108,7 @@ export async function searchChunks(pool: pg.Pool, documentId: number, queryEmbed
  * (plainto_tsquery would AND them, and a natural-language question rarely matches every
  * word), stemmed, and stripped of stop words by the 'english' configuration.
  */
-export async function keywordSearch(pool: pg.Pool, documentId: number, query: string, k: number): Promise<RetrievedChunk[]> {
+export async function keywordSearch(pool: DbPool, documentId: number, query: string, k: number): Promise<RetrievedChunk[]> {
   const { rows } = await pool.query(
     `WITH q AS (
        SELECT to_tsquery('english', replace(plainto_tsquery('english', $1)::text, ' & ', ' | ')) AS query

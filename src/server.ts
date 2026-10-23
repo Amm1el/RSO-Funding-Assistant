@@ -1,6 +1,6 @@
 import express from "express";
 import { existsSync } from "node:fs";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { z } from "zod";
 import { config } from "./config.js";
 import { createPool } from "./db.js";
@@ -47,7 +47,8 @@ export function createApp(deps: Deps & { document?: { version: string } }) {
   return app;
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+// pathToFileURL handles Windows paths (C:\...), which a hand-built "file://" string doesn't.
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const deps = await createDeps(createPool());
   createApp(deps).listen(config.PORT, () => {
     console.log(`RSO Funding Assistant on http://localhost:${config.PORT}`);

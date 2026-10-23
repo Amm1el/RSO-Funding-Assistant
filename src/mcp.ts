@@ -1,5 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { pathToFileURL } from "node:url";
 import { z } from "zod";
 import { createPool } from "./db.js";
 import { ask, retrieve, type Deps } from "./pipeline.js";
@@ -46,6 +47,7 @@ server.registerTool(
   },
 );
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+// pathToFileURL handles Windows paths (C:\...), which a hand-built "file://" string doesn't.
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   await server.connect(new StdioServerTransport());
 }
