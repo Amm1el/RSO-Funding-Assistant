@@ -9,5 +9,25 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rso"]
+      interval: 5s
+      retries: 10
+
+  # The whole app in one container: docker compose up --build, then open http://localhost:3000
+  app:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      DATABASE_URL: postgres://rso:rso@db:5432/rso
+    ports:
+      - "3000:3000"
+    profiles: ["app"]
+
 volumes:
   pgdata:

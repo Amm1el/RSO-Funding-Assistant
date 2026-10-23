@@ -6,7 +6,11 @@ on:
   pull_request:
   workflow_dispatch:
 
+env:
+  MANUAL_URL: https://sga.fsu.edu/sites/default/files/PDFs/Accounting/26-27SGAFM.pdf
+
 jobs:
+  # Every push: types, unit + pgvector integration tests, web build, and the keyless eval.
   test:
     runs-on: ubuntu-latest
     services:
@@ -19,8 +23,6 @@ jobs:
         ports: ["5432:5432"]
         options: >-
           --health-cmd "pg_isready -U rso" --health-interval 5s --health-timeout 5s --health-retries 10
-    env:
-      TEST_DATABASE_URL: postgres://rso:rso@localhost:5432/rso_test
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -28,12 +30,33 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Download the 2026-27 manual (enables the real-manual integration test)
-        run: curl -fsSL -o data/26-27SGAFM.pdf https://sga.fsu.edu/sites/default/files/PDFs/Accounting/26-27SGAFM.pdf || echo "Manual download failed; that test will be skipped."
+      - name: Download the 2026-27 manual
+        run: curl -fsSL -o data/26-27SGAFM.pdf "$MANUAL_URL"
       - run: npm run typecheck
-      - run: npm test
+      - name: Tests (unit, pgvector integration, eval set vs. manual)
+        run: npm test
+        env:
+          TEST_DATABASE_URL: postgres://rso:rso@localhost:5432/rso_test
+      - run: npm run build
+      # The whole pipeline with no API keys: offline embedder, hybrid search, extractive answers.
+      # Gates sit a little below the recorded baseline (see evals/history.jsonl) so a retrieval
+      # regression fails the build.
+      - name: Keyless eval (retrieval + extractive baseline)
+        env:
+          DATABASE_URL: postgres://rso:rso@localhost:5432/rso_test
+        run: |
+          npm run ingest -- data/26-27SGAFM.pdf --offline
+          npm run eval -- --generator extractive --min-retrieval 85 --min-pass 50
 
-  # Full answer-quality eval: real embeddings + Claude. Runs only when API keys are configured.
+  # Every push: the production image builds.
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t rso-funding-assistant .
+
+  # On demand (Actions tab > CI > Run workflow): real embeddings + Claude + LLM judge.
+  # Needs OPENAI_API_KEY and ANTHROPIC_API_KEY repository secrets.
   eval:
     needs: test
     if: github.event_name == 'workflow_dispatch'
@@ -59,9 +82,9 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: curl -fsSL -o data/26-27SGAFM.pdf https://sga.fsu.edu/sites/default/files/PDFs/Accounting/26-27SGAFM.pdf
+      - run: curl -fsSL -o data/26-27SGAFM.pdf "$MANUAL_URL"
       - run: npm run ingest -- data/26-27SGAFM.pdf
-      - run: npm run eval -- --min-pass 80
+      - run: npm run eval -- --generator claude --judge
       - uses: actions/upload-artifact@v4
         if: always()
         with:

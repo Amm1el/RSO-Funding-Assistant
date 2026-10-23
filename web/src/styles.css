@@ -10,8 +10,8 @@
   --highlight-ink: #1c2b3a;
   --warn-bg: #f6ece6;
   --warn-ink: #7a3320;
-  --sans: "Public Sans", system-ui, sans-serif;
-  --serif: "Source Serif 4", Georgia, serif;
+  --sans: "Public Sans Variable", system-ui, sans-serif;
+  --serif: "Source Serif 4 Variable", Georgia, serif;
   color-scheme: light;
 }
 
