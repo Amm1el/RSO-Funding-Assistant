@@ -1,0 +1,298 @@
+/* Tokens: form-paper blue-gray, navy ink, highlighter yellow. Serif = the manual's words. */
+:root {
+  --paper: #eef1f4;
+  --sheet: #ffffff;
+  --ink: #1c2b3a;
+  --ink-soft: #4f5f70;
+  --rule: #c9d2dc;
+  --accent: #23548a;
+  --highlight: #ffe36e;
+  --highlight-ink: #1c2b3a;
+  --warn-bg: #f6ece6;
+  --warn-ink: #7a3320;
+  --sans: "Public Sans", system-ui, sans-serif;
+  --serif: "Source Serif 4", Georgia, serif;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #131b24;
+    --sheet: #1b2531;
+    --ink: #e4e9ef;
+    --ink-soft: #a3b0bd;
+    --rule: #33414f;
+    --accent: #8fb8e6;
+    --highlight: #6b5a12;
+    --highlight-ink: #fff6cc;
+    --warn-bg: #3a231c;
+    --warn-ink: #f2c3b3;
+    color-scheme: dark;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 400 1rem/1.55 var(--sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+.page {
+  max-width: 46rem;
+  margin: 0 auto;
+  padding: 3.5rem 1rem 4rem;
+}
+
+.masthead h1 {
+  font-size: clamp(1.75rem, 4vw, 2.4rem);
+  font-weight: 650;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+  margin: 0 0 0.75rem;
+}
+
+.lede {
+  color: var(--ink-soft);
+  max-width: 38rem;
+  margin: 0 0 2.5rem;
+}
+
+.examples p {
+  margin: 0 0 0.5rem;
+  color: var(--ink-soft);
+  font-size: 0.9375rem;
+}
+
+.examples ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.examples button {
+  font: inherit;
+  font-size: 0.9375rem;
+  color: var(--ink);
+  background: var(--sheet);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  padding: 0.4rem 0.9rem;
+  cursor: pointer;
+  text-align: left;
+}
+
+.examples button:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+.thread {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.exchange {
+  padding: 1.75rem 0;
+  border-top: 1px solid var(--rule);
+}
+
+.question {
+  font-weight: 650;
+  font-size: 1.125rem;
+  margin: 0 0 0.75rem;
+}
+
+.pending {
+  color: var(--ink-soft);
+  margin: 0;
+}
+
+.error {
+  margin: 0;
+  color: var(--warn-ink);
+  background: var(--warn-bg);
+  padding: 0.6rem 0.8rem;
+  border-radius: 6px;
+}
+
+.answer-text {
+  font-size: 1.0625rem;
+  margin: 0;
+  max-width: 40rem;
+}
+
+.not-covered .verdict {
+  display: inline-block;
+  margin: 0 0 0.5rem;
+  padding: 0.15rem 0.6rem;
+  border-radius: 4px;
+  background: var(--warn-bg);
+  color: var(--warn-ink);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.mode-note {
+  color: var(--ink-soft);
+  font-size: 0.875rem;
+  margin: 0 0 0.4rem;
+  max-width: 40rem;
+}
+
+.sources h2 {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--ink-soft);
+  margin: 1.5rem 0 0.75rem;
+}
+
+/* The manual's own words: a white sheet, serif, with the cited quote highlighted. */
+.passage {
+  margin: 0 0 0.75rem;
+  background: var(--sheet);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: 0.9rem 1.1rem 1rem;
+}
+
+.passage figcaption {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.25rem 1rem;
+  font-size: 0.8125rem;
+  color: var(--ink-soft);
+  margin-bottom: 0.5rem;
+}
+
+.passage .section {
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.passage blockquote {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 1rem;
+  line-height: 1.65;
+}
+
+.passage mark {
+  background: var(--highlight);
+  color: var(--highlight-ink);
+  padding: 0.05em 0.1em;
+  border-radius: 2px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+.others {
+  margin-top: 1rem;
+}
+
+.others summary {
+  cursor: pointer;
+  color: var(--accent);
+  font-size: 0.9375rem;
+  margin-bottom: 0.75rem;
+  width: fit-content;
+}
+
+.ask {
+  margin-top: 1.5rem;
+}
+
+.ask label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 0.4rem;
+}
+
+.ask-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: stretch;
+}
+
+.ask textarea {
+  flex: 1;
+  min-width: 0;
+  font: inherit;
+  color: var(--ink);
+  background: var(--sheet);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  padding: 0.6rem 0.75rem;
+  resize: vertical;
+}
+
+.ask textarea[aria-invalid="true"] {
+  border-color: var(--warn-ink);
+}
+
+.ask button {
+  font: inherit;
+  font-weight: 650;
+  color: #fff;
+  background: var(--accent);
+  border: 0;
+  border-radius: 6px;
+  padding: 0 1.4rem;
+  cursor: pointer;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .ask button {
+    color: #0f1822;
+  }
+}
+
+.ask button:disabled,
+.examples button:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.field-error {
+  color: var(--warn-ink);
+  font-size: 0.875rem;
+  margin: 0.4rem 0 0;
+}
+
+.disclaimer {
+  margin-top: 2.5rem;
+  font-size: 0.875rem;
+  color: var(--ink-soft);
+}
+
+a {
+  color: var(--accent);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (max-width: 30rem) {
+  .page {
+    padding-top: 2rem;
+  }
+  .ask-row {
+    flex-direction: column;
+  }
+  .ask button {
+    padding: 0.7rem;
+  }
+}

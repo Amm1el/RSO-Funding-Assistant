@@ -9,15 +9,15 @@ import { createDeps } from "./runtime.js";
 
 const AskBody = z.object({ question: z.string().trim().min(3).max(500) });
 
-/** Static files: the built React app if present, otherwise the plain fallback page. */
+/** The built React app (npm run build). */
 const WEB_DIST = fileURLToPath(new URL("../web/dist", import.meta.url));
-const FALLBACK = fileURLToPath(new URL("../public", import.meta.url));
 
 export function createApp(deps: Deps & { document?: { version: string } }) {
   const app = express();
   app.disable("x-powered-by");
   app.use(express.json({ limit: "10kb" }));
-  app.use(express.static(existsSync(WEB_DIST) ? WEB_DIST : FALLBACK));
+  if (existsSync(WEB_DIST)) app.use(express.static(WEB_DIST));
+  else app.get("/", (_req, res) => void res.type("text").send("The web UI isn't built yet. Run: npm run build (or npm run dev:web for live reload)."));
 
   app.get("/health", async (_req, res) => {
     const { rows } = await deps.pool.query("SELECT count(*)::int AS chunks FROM chunks WHERE document_id = $1", [deps.documentId]);
