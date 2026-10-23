@@ -1,89 +1,132 @@
 # RSO Funding Assistant
 
-Answers Florida State University student organizations' questions about Student Government Association (SGA) funding, using only the official **2026–27 RSO Financial Manual**, and cites the section and page for every answer.
+[![CI](https://github.com/Amm1el/rso-funding-assistant/actions/workflows/ci.yml/badge.svg)](https://github.com/Amm1el/rso-funding-assistant/actions/workflows/ci.yml)
 
-I chair SGA's RSO Allocation Committee (RSOAC), which reviews funding requests from FSU's 750+ registered student organizations. Most questions we get each week are already answered in the manual, but the manual is 18 pages and the answer is usually one line. This tool finds that line.
+Answers Florida State University student organizations' questions about Student Government Association (SGA) funding, using only the official **2026–27 RSO Financial Manual**, and shows the exact passage behind every answer.
 
-> Not official SGA advice. When the manual doesn't cover a question, the assistant says so instead of guessing.
+I chair SGA's RSO Allocation Committee (RSOAC), which reviews funding requests from FSU's registered student organizations. Most questions we get each week are already answered in the manual, but the answer is usually one line in 16 pages. This tool finds that line, cites it, and says so when the manual doesn't cover a question.
+
+> Not official SGA advice.
+
+![Demo: asking about Uber reimbursement, hotel limits, and parking passes](docs/demo.gif)
+
+<sub>Recorded in keyless mode (offline retrieval, direct-quote answers). Re-record with `scripts/record-demo.ts` once API keys are set.</sub>
 
 ## How it works
 
 ```
-PDF ──► per-page text ──► section-aware chunks ──► embeddings ──► Postgres + pgvector
-                                                                       │
-question ──► embedding ──► top-k cosine search ──► similarity cutoff ──┘
-                                     │
-                                     ▼
-                     Claude, forced to answer through a JSON tool schema
-                                     │
-                                     ▼
-              citation check: every quote must appear word for word in the excerpt it cites
+                 ┌──────────── ingest (once per manual edition) ────────────┐
+ manual PDF ──► per-page text ──► TOC-guided sections ──► 150-word chunks ──► embeddings ──► Postgres
+                                                                                             pgvector + full-text
+ question ──► embed ──► vector search ─┐
+          └──────────► keyword search ─┴─► reciprocal rank fusion ──► top 6 passages
+                                                                          │
+                                       Claude, forced to answer through a JSON tool schema
+                                                                          │
+                     citation check: every quote must appear word for word in the passage it cites
+                                                                          │
+                              web UI  ·  REST API  ·  MCP server  ·  eval harness
 ```
 
-1. **Ingest** (`src/ingest/`). The manual's own table of contents is parsed and used as the list of section headings, with typo-tolerant matching because the TOC and the body don't always spell headings the same way. Chunks never cross a section boundary, so every chunk can be cited by section and page. Long sections are split into overlapping ~300-word windows.
-2. **Store** (`db/schema.sql`, `src/db.ts`). Chunks and their 1536-dimension embeddings go into Postgres with pgvector, behind an HNSW cosine index. Re-ingesting a manual version replaces it in one transaction.
-3. **Retrieve** (`src/pipeline.ts`). The question is embedded, the top 6 chunks are fetched, and anything below a similarity cutoff is dropped. If nothing is left, the model is never called.
-4. **Answer** (`src/answer.ts`). Claude must respond through a `submit_answer` tool schema: `answerable`, `answer`, and citations (excerpt number + exact quote).
-5. **Verify citations.** Quotes that don't appear in the cited excerpt are discarded. An answer that claims to be answerable but has no surviving citation is downgraded to "not answered."
+1. **Ingest** (`src/ingest/`). The manual's table of contents is the list of section headings, matched with typo tolerance because the TOC and body spell some headings differently. Chunks never cross a section boundary, so every chunk can be cited by section and page.
+2. **Store** (`db/schema.sql`). Chunks, 1536-dimension embeddings (HNSW cosine index) and a generated full-text column (GIN index) in one Postgres table. The embedding model is recorded with each manual so questions always use the same one.
+3. **Retrieve** (`src/pipeline.ts`). Vector and keyword results are merged with reciprocal rank fusion. If even the best vector match is below the model's cutoff, the question is refused without calling the LLM.
+4. **Answer** (`src/answer.ts`). Claude answers through a `submit_answer` tool schema: `answerable`, `answer`, and citations (passage number + exact quote).
+5. **Verify** citations in code. Quotes that don't appear in the cited passage are dropped; an answer left with no valid citation becomes "not answered".
 
-## What's in the repo
+Without API keys, the same pipeline runs with an offline embedder and an extractive answerer that quotes the best-matching sentences. That's also the eval baseline.
 
-| Path | What it is |
+## Evaluation
+
+63 questions in `evals/questions.jsonl`: 26 single-fact lookups, 20 limits/amounts/deadlines, 10 multi-fact, and 7 the manual can't answer. Each has an expected section, required facts, and a reference answer. A test checks every case against the real manual, so a typo can't make a case impossible to pass.
+
+| Metric | What it measures |
 |---|---|
-| `src/server.ts`, `public/index.html` | Express API (`POST /api/ask`, `GET /health`) and a small web page |
-| `src/mcp.ts` | MCP server with `ask_funding_manual` and `search_funding_manual` tools, so Claude Desktop or Claude Code can use it |
-| `src/cli/` | `ingest`, `ask`, `eval`, `migrate` commands |
-| `evals/questions.jsonl` | 20 eval questions with expected sections and required facts, including 3 the manual can't answer |
-| `tests/` | Vitest unit tests plus integration tests against a real Postgres + pgvector |
-| `.github/workflows/ci.yml` | Type-check and tests on every push; full answer eval on manual trigger |
-| `DECISIONS.md` | Why each design choice was made |
+| Pass rate | Every check below passes for the case |
+| Retrieval hit rate / MRR | The section holding the answer was retrieved / how high it ranked |
+| Citation accuracy | The answer cites the section the answer lives in |
+| Refusal rate | Questions the manual doesn't cover are refused |
+| Fact recall | Required numbers and terms appear in the answer |
+
+Results so far (from `evals/history.jsonl`, offline embedder + extractive answers):
+
+| Change | Pass | Retrieval hit | MRR | Citation acc. | Refusal |
+|---|---|---|---|---|---|
+| v0.1 setup: 300-word chunks, vector search | 51% | 91% | 0.68 | 79% | 14% |
+| + hybrid search (vector + full-text, RRF) | 52% | 89% | 0.73 | 80% | 14% |
+| + 150-word chunks | **54%** | 89% | **0.76** | **82%** | 14% |
+
+The 14% refusal rate is the point of the baseline: word overlap can't tell that "What's the funding cap at the University of Florida?" is off-topic. Closing that gap is what the LLM is for. **Next row:** the same eval with OpenAI embeddings and Claude (`npm run eval -- --judge --record "..."`).
+
+CI runs the keyless eval on every push and fails below 85% retrieval hit rate or 50% pass rate. The Claude eval runs on demand (Actions → CI → Run workflow).
 
 ## Run it
 
-Requirements: Node 20+, Docker, an OpenAI API key (embeddings) and an Anthropic API key (answers).
+Requirements: Node 22, Docker. API keys are optional.
 
 ```bash
 npm install
-cp .env.example .env            # add your API keys
-npm run db:up                   # Postgres + pgvector in Docker
-# Download the manual into data/:
-#   https://sga.fsu.edu/sites/default/files/PDFs/Accounting/26-27SGAFM.pdf
+cp .env.example .env              # optional: add OPENAI_API_KEY and ANTHROPIC_API_KEY
+npm run db:up                     # Postgres + pgvector in Docker
+curl -fsSL -o data/26-27SGAFM.pdf https://sga.fsu.edu/sites/default/files/PDFs/Accounting/26-27SGAFM.pdf
 npm run ingest -- data/26-27SGAFM.pdf
-npm run ask -- "What is the most our RSO can get from RSOAC this year?"
-npm run dev                     # http://localhost:3000
+npm run build && npm start        # http://localhost:3000
 ```
 
-No API keys yet? `npm run ingest -- data/26-27SGAFM.pdf --offline` uses a local hash embedder so you can explore the database and retrieval.
+Other commands:
+
+```bash
+npm run ask -- "What is the most our RSO can get from RSOAC this year?"
+npm run dev & npm run dev:web     # API with reload + UI with hot reload on :5173
+npm test                          # unit tests; set TEST_DATABASE_URL for pgvector integration tests
+npm run eval -- --record "what I changed"
+docker compose --profile app up --build   # the production image
+```
 
 ### Use it from Claude Desktop or Claude Code (MCP)
+
+Two tools: `ask_funding_manual` (cited answer) and `search_funding_manual` (passages only).
 
 ```json
 {
   "mcpServers": {
-    "rso-funding": { "command": "npx", "args": ["tsx", "/path/to/RSO-Funding-Assistant/src/mcp.ts"] }
+    "rso-funding": {
+      "command": "/path/to/rso-funding-assistant/node_modules/.bin/tsx",
+      "args": ["/path/to/rso-funding-assistant/src/mcp.ts"]
+    }
   }
 }
 ```
 
-## Tests and evals
+`npx tsx scripts/mcp-smoke.ts "your question"` starts the server the same way and calls both tools.
 
-```bash
-npm test                                                   # unit tests
-TEST_DATABASE_URL=postgres://rso:rso@localhost:5432/rso_test npm test   # + pgvector integration tests
-npm run eval                                               # answer quality (needs API keys)
-```
+## Deploy
 
-The eval reports retrieval hit rate (did the expected section come back?), answerability accuracy (did it refuse exactly when it should?), fact recall (did the answer contain the required numbers?) and overall pass rate.
+One Docker image plus Postgres with pgvector; the container ingests the manual on first boot. Step-by-step for Render + Neon (free) and AWS App Runner + RDS: [docs/DEPLOY.md](docs/DEPLOY.md).
 
-## Status
+## Repo map
 
-Version 0.1: ingestion, storage, retrieval, cited answers, web page, MCP server, tests and CI are in place. Next:
+| Path | What it is |
+|---|---|
+| `src/ingest/` | PDF text, TOC parsing, section-aware chunking |
+| `src/db.ts`, `db/schema.sql` | Schema, vector search, full-text search |
+| `src/pipeline.ts` | Retrieval (hybrid + RRF) and `ask()` |
+| `src/answer.ts`, `src/extractive.ts` | Claude answerer with citation checks; no-LLM baseline |
+| `src/runtime.ts` | Picks the embedder and answerer; shared by API, MCP, CLI and evals |
+| `src/server.ts`, `web/` | Express API and React UI |
+| `src/mcp.ts` | MCP server |
+| `src/evals.ts`, `src/judge.ts`, `src/cli/eval.ts`, `evals/` | Eval set, scoring, LLM judge, score history |
+| `tests/` | 101 tests: unit, pgvector integration, MCP client, eval set vs. manual |
+| `DECISIONS.md` | Every design trade-off and the evidence behind it |
+| `docs/WALKTHROUGH.md` | How to learn this codebase well enough to defend it |
 
-- [ ] Run the full eval with real embeddings and publish the scores here
-- [ ] Replace the draft eval questions with real questions from the RSOAC inbox, each checked against the manual (`"verified": true`)
-- [ ] Tune chunk size, top-k and the similarity cutoff using the eval
-- [ ] Hybrid search (keyword + vector) for exact terms like "EIN" and dollar amounts
-- [ ] Deploy
+## Roadmap
+
+- [ ] Run the eval with OpenAI embeddings + Claude and add the row above
+- [ ] Verify the 63 draft eval cases against real RSOAC decisions (`"verified": true`) and add real inbox questions
+- [ ] Re-run the chunk-size sweep with real embeddings
+- [ ] Deploy (docs/DEPLOY.md) and link it here
+- [ ] Load 2025–26 alongside 2026–27 and answer "what changed?"
 
 ## Author
 
