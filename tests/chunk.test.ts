@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { chunkPages, editDistance, matchHeading, normalizeHeading, parseTableOfContents } from "../src/ingest/chunk.js";
+import { chunkPages, editDistance, joinLines, matchHeading, normalizeHeading, parseTableOfContents } from "../src/ingest/chunk.js";
 
 const toc = [
   "Cover",
@@ -93,5 +93,12 @@ describe("chunkPages", () => {
 
   it("rejects overlap that would never advance", () => {
     expect(() => chunkPages(pages, { maxWords: 10, overlapWords: 10 })).toThrow();
+  });
+});
+
+describe("joinLines", () => {
+  it("rejoins a word the PDF hyphenated across lines, and spaces everything else", () => {
+    expect(joinLines(["email SGA-", "SBT@fsu.edu with", "questions"])).toBe("email SGA-SBT@fsu.edu with questions");
+    expect(joinLines(["within 3-5", "business days"])).toBe("within 3-5 business days");
   });
 });

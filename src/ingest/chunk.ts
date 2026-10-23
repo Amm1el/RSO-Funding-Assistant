@@ -61,10 +61,18 @@ export interface ChunkOptions {
   headings?: string[];
   /** 1-based pages to skip entirely, such as the cover and the table of contents. */
   skipPages?: number[];
-  /** Target words per chunk. ~300 words is roughly 400 tokens. */
+  /** Target words per chunk (default 150, about 200 tokens; chosen with the eval, see evals/history.jsonl). */
   maxWords?: number;
   /** Words repeated between consecutive chunks inside one section, so a rule split across a boundary still appears whole. */
   overlapWords?: number;
+}
+
+/**
+ * Joins wrapped lines with spaces, except a line ending in a hyphen right after a letter
+ * ("SGA-" + "SBT@fsu.edu"), which the PDF broke mid-word and must be rejoined without one.
+ */
+export function joinLines(lines: string[]): string {
+  return lines.reduce((text, line) => (text === "" ? line : /[A-Za-z]-$/.test(text) ? text + line : `${text} ${line}`), "");
 }
 
 interface Paragraph {
@@ -89,7 +97,7 @@ export function toParagraphs(pages: string[], options: ChunkOptions = {}): Parag
     if (skip.has(page)) return;
     let buffer: string[] = [];
     const flush = () => {
-      const text = buffer.join(" ").replace(/\s+/g, " ").trim();
+      const text = joinLines(buffer).replace(/\s+/g, " ").trim();
       if (text) paragraphs.push({ text, page, section });
       buffer = [];
     };
@@ -122,9 +130,12 @@ export function toParagraphs(pages: string[], options: ChunkOptions = {}): Parag
  * Section-aware chunking: chunks never cross a section boundary, so every chunk
  * can be cited by section and page. Long sections are split into overlapping windows.
  */
+export const DEFAULT_MAX_WORDS = 150;
+export const DEFAULT_OVERLAP_WORDS = 30;
+
 export function chunkPages(pages: string[], options: ChunkOptions = {}): Chunk[] {
-  const maxWords = options.maxWords ?? 300;
-  const overlapWords = options.overlapWords ?? 50;
+  const maxWords = options.maxWords ?? DEFAULT_MAX_WORDS;
+  const overlapWords = options.overlapWords ?? DEFAULT_OVERLAP_WORDS;
   if (overlapWords >= maxWords) throw new Error("overlapWords must be smaller than maxWords");
 
   const chunks: Chunk[] = [];
