@@ -80,6 +80,17 @@ describe("chunkPages", () => {
     expect(chunks.map((c) => c.ordinal)).toEqual(chunks.map((_, i) => i));
   });
 
+  it("prefixes a child section with its parent when the parent has no body text", () => {
+    const nested = [
+      "Cover",
+      "Table of Contents\nFinancial Certification.... 3\nRequirements.... 3\nFinal Notes.... 3",
+      "Financial Certification\nRequirements\nAll officers must certify.\nFinal Notes\nThanks.",
+    ];
+    const parsed = parseTableOfContents(nested)!;
+    const out = chunkPages(nested, { headings: parsed.headings, skipPages: [1, parsed.tocPage] });
+    expect(out.map((c) => c.section)).toEqual(["Financial Certification: Requirements", "Final Notes"]);
+  });
+
   it("rejects overlap that would never advance", () => {
     expect(() => chunkPages(pages, { maxWords: 10, overlapWords: 10 })).toThrow();
   });

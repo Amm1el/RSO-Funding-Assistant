@@ -78,6 +78,11 @@ export function toParagraphs(pages: string[], options: ChunkOptions = {}): Parag
   const skip = new Set(options.skipPages ?? []);
   const paragraphs: Paragraph[] = [];
   let section = "Front matter";
+  // A heading followed directly by another heading (no body text between) is a parent,
+  // e.g. "Financial Certification" then "Requirements". The child is labeled
+  // "Financial Certification: Requirements" so a citation isn't just "Requirements".
+  let previousHeading: string | null = null;
+  let bodySinceHeading = true;
 
   pages.forEach((pageText, i) => {
     const page = i + 1;
@@ -99,9 +104,13 @@ export function toParagraphs(pages: string[], options: ChunkOptions = {}): Parag
       if (heading) {
         flush();
         // Label the section the way the body text spells it; the TOC has a few typos.
-        section = line.replace(/\s+/g, " ");
+        const title = line.replace(/\s+/g, " ");
+        section = !bodySinceHeading && previousHeading ? `${previousHeading}: ${title}` : title;
+        previousHeading = title;
+        bodySinceHeading = false;
         continue;
       }
+      bodySinceHeading = true;
       buffer.push(line);
     }
     flush();
