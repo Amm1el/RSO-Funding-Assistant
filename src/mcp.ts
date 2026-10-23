@@ -2,26 +2,30 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 import { createPool } from "./db.js";
-import { OpenAIEmbedder } from "./embeddings.js";
-import { ClaudeAnswerGenerator } from "./answer.js";
-import { ask, retrieve } from "./pipeline.js";
+import { ask, retrieve, type Deps } from "./pipeline.js";
+import { createDeps } from "./runtime.js";
 
 /**
  * Exposes the assistant to MCP clients (Claude Desktop, Claude Code) over stdio,
  * so an assistant can look up funding rules while helping an officer plan an event.
+ * Dependencies are created on the first tool call, so the server starts (and lists
+ * its tools) even before the database is reachable.
  */
-const deps = { pool: createPool(), embedder: new OpenAIEmbedder(), generator: new ClaudeAnswerGenerator() };
-const server = new McpServer({ name: "rso-funding-assistant", version: "0.1.0" });
+let deps: Promise<Deps> | undefined;
+const getDeps = () => (deps ??= createDeps(createPool()));
+
+export const server = new McpServer({ name: "rso-funding-assistant", version: "0.2.0" });
 
 server.registerTool(
   "ask_funding_manual",
   {
     title: "Ask the FSU RSO Financial Manual",
-    description: "Answers a question about FSU SGA funding rules for student organizations, with cited sections and pages.",
+    description:
+      "Answers a question about FSU SGA funding rules for registered student organizations (RSOAC limits, prohibited purchases, travel, receipts, deadlines), citing manual sections and pages. Returns answerable=false when the manual doesn't cover the question.",
     inputSchema: { question: z.string().min(3).max(500) },
   },
   async ({ question }) => {
-    const result = await ask(deps, question);
+    const { passages: _passages, ...result } = await ask(await getDeps(), question);
     return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
   },
 );
@@ -34,12 +38,14 @@ server.registerTool(
     inputSchema: { query: z.string().min(3).max(500), k: z.number().int().min(1).max(10).optional() },
   },
   async ({ query, k }) => {
-    const chunks = await retrieve(deps, query, k ?? 5);
+    const chunks = await retrieve(await getDeps(), query, k ?? 5);
     const text = chunks
-      .map((c) => `## ${c.section} (p. ${c.pageStart}${c.pageEnd !== c.pageStart ? `-${c.pageEnd}` : ""}), similarity ${c.similarity.toFixed(2)}\n${c.content}`)
+      .map((c) => `## ${c.section} (p. ${c.pageStart}${c.pageEnd !== c.pageStart ? `-${c.pageEnd}` : ""})\n${c.content}`)
       .join("\n\n");
     return { content: [{ type: "text", text: text || "No relevant passages found." }] };
   },
 );
 
-await server.connect(new StdioServerTransport());
+if (import.meta.url === `file://${process.argv[1]}`) {
+  await server.connect(new StdioServerTransport());
+}

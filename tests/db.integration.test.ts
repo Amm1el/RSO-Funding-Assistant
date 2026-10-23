@@ -30,22 +30,22 @@ describe.skipIf(!url)("Postgres + pgvector", () => {
 
   it("stores chunks and finds the nearest one", async () => {
     const vectors = await embedder.embed(chunks.map((c) => c.content));
-    await saveDocument(pool, { title: "Test Manual", version: "t1", sourceFile: "t.pdf" }, chunks, vectors);
+    const docId = await saveDocument(pool, { title: "Test Manual", version: "t1", sourceFile: "t.pdf", embedder: embedder.name }, chunks, vectors);
     const [q] = await embedder.embed(["what is the hotel rate per night"]);
-    const results = await searchChunks(pool, q, 2);
+    const results = await searchChunks(pool, docId, q, 2);
     expect(results[0].section).toBe("LODGING");
     expect(results[0].similarity).toBeGreaterThan(results[1].similarity);
   });
 
   it("re-ingesting the same version replaces it instead of duplicating", async () => {
     const vectors = await embedder.embed(chunks.map((c) => c.content));
-    await saveDocument(pool, { title: "Test Manual", version: "t1", sourceFile: "t.pdf" }, chunks, vectors);
+    await saveDocument(pool, { title: "Test Manual", version: "t1", sourceFile: "t.pdf", embedder: embedder.name }, chunks, vectors);
     const { rows } = await pool.query("SELECT count(*)::int AS n FROM chunks");
     expect(rows[0].n).toBe(3);
   });
 
   it("rolls back when chunks and embeddings don't line up", async () => {
-    await expect(saveDocument(pool, { title: "Bad", version: "x", sourceFile: "x" }, chunks, [])).rejects.toThrow();
+    await expect(saveDocument(pool, { title: "Bad", version: "x", sourceFile: "x", embedder: embedder.name }, chunks, [])).rejects.toThrow();
     const { rows } = await pool.query("SELECT count(*)::int AS n FROM documents WHERE title = 'Bad'");
     expect(rows[0].n).toBe(0);
   });
@@ -56,8 +56,8 @@ describe.skipIf(!url)("Postgres + pgvector", () => {
     const toc = parseTableOfContents(pages)!;
     const real = chunkPages(pages, { headings: toc.headings, skipPages: [1, toc.tocPage] });
     const vectors = await embedder.embed(real.map((c) => `${c.section}\n${c.content}`));
-    await saveDocument(pool, { title: "RSO Financial Manual", version: "2026-27", sourceFile: "26-27SGAFM.pdf" }, real, vectors);
-    const top = await retrieve({ pool, embedder }, "maximum daily hotel rate per night lodging", 3);
+    const documentId = await saveDocument(pool, { title: "RSO Financial Manual", version: "2026-27", sourceFile: "26-27SGAFM.pdf", embedder: embedder.name }, real, vectors);
+    const top = await retrieve({ pool, embedder, documentId }, "maximum daily hotel rate per night lodging", 3);
     expect(top.map((c) => c.section)).toContain("LODGING");
   });
 });

@@ -23,12 +23,12 @@ export function buildContext(chunks: RetrievedChunk[]): string {
 }
 
 /** The structured output we force the model to produce, via a tool schema. */
-const AnswerToolInput = z.object({
+export const AnswerToolInput = z.object({
   answerable: z.boolean(),
   answer: z.string(),
   citations: z.array(z.object({ excerpt: z.number().int(), quote: z.string() })),
 });
-type AnswerToolInput = z.infer<typeof AnswerToolInput>;
+export type AnswerToolInput = z.infer<typeof AnswerToolInput>;
 
 export const ANSWER_TOOL: Anthropic.Tool = {
   name: "submit_answer",
@@ -80,10 +80,13 @@ export function validateCitations(raw: AnswerToolInput["citations"], chunks: Ret
 }
 
 export interface AnswerGenerator {
+  /** Shown in API responses and eval results, e.g. "claude:claude-sonnet-5-5" or "extractive". */
+  readonly name: string;
   generate(question: string, chunks: RetrievedChunk[]): Promise<AnswerToolInput>;
 }
 
 export class ClaudeAnswerGenerator implements AnswerGenerator {
+  readonly name = `claude:${config.ANSWER_MODEL}`;
   private client = new Anthropic({ apiKey: requireKey("ANTHROPIC_API_KEY") });
 
   async generate(question: string, chunks: RetrievedChunk[]): Promise<AnswerToolInput> {

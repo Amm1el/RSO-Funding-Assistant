@@ -13,10 +13,18 @@ export async function migrate(pool: pg.Pool): Promise<void> {
   await pool.query(sql);
 }
 
+export interface DocumentInfo {
+  id: number;
+  title: string;
+  version: string;
+  embedder: string;
+  chunks: number;
+}
+
 /** Replaces any previous ingest of the same title/version in one transaction. */
 export async function saveDocument(
   pool: pg.Pool,
-  doc: { title: string; version: string; sourceFile: string },
+  doc: { title: string; version: string; sourceFile: string; embedder: string },
   chunks: Chunk[],
   embeddings: number[][],
 ): Promise<number> {
@@ -26,8 +34,8 @@ export async function saveDocument(
     await client.query("BEGIN");
     await client.query("DELETE FROM documents WHERE title = $1 AND version = $2", [doc.title, doc.version]);
     const { rows } = await client.query<{ id: number }>(
-      "INSERT INTO documents (title, version, source_file) VALUES ($1, $2, $3) RETURNING id",
-      [doc.title, doc.version, doc.sourceFile],
+      "INSERT INTO documents (title, version, source_file, embedder) VALUES ($1, $2, $3, $4) RETURNING id",
+      [doc.title, doc.version, doc.sourceFile, doc.embedder],
     );
     const documentId = rows[0].id;
     for (let i = 0; i < chunks.length; i++) {
@@ -48,23 +56,60 @@ export async function saveDocument(
   }
 }
 
-/** Top-k chunks by cosine similarity (pgvector's <=> is cosine distance). */
-export async function searchChunks(pool: pg.Pool, queryEmbedding: number[], k: number): Promise<RetrievedChunk[]> {
+/** The document questions are answered from: the most recently ingested one. */
+export async function getActiveDocument(pool: pg.Pool): Promise<DocumentInfo | null> {
   const { rows } = await pool.query(
-    `SELECT id, ordinal, section, page_start, page_end, content,
-            1 - (embedding <=> $1::vector) AS similarity
-       FROM chunks
-      ORDER BY embedding <=> $1::vector
-      LIMIT $2`,
-    [toSql(queryEmbedding), k],
+    `SELECT d.id, d.title, d.version, d.embedder, count(c.id)::int AS chunks
+       FROM documents d LEFT JOIN chunks c ON c.document_id = d.id
+      GROUP BY d.id ORDER BY d.ingested_at DESC, d.id DESC LIMIT 1`,
   );
-  return rows.map((r) => ({
-    id: r.id,
-    ordinal: r.ordinal,
-    section: r.section,
-    pageStart: r.page_start,
-    pageEnd: r.page_end,
-    content: r.content,
-    similarity: Number(r.similarity),
-  }));
+  return rows[0] ?? null;
+}
+
+const COLUMNS = "id, ordinal, section, page_start, page_end, content";
+
+function toChunk(r: Record<string, unknown>, similarity: number): RetrievedChunk {
+  return {
+    id: r.id as number,
+    ordinal: r.ordinal as number,
+    section: r.section as string,
+    pageStart: r.page_start as number,
+    pageEnd: r.page_end as number,
+    content: r.content as string,
+    similarity,
+  };
+}
+
+/** Top-k chunks by cosine similarity (pgvector's <=> is cosine distance). */
+export async function searchChunks(pool: pg.Pool, documentId: number, queryEmbedding: number[], k: number): Promise<RetrievedChunk[]> {
+  const { rows } = await pool.query(
+    `SELECT ${COLUMNS}, 1 - (embedding <=> $1::vector) AS similarity
+       FROM chunks
+      WHERE document_id = $2
+      ORDER BY embedding <=> $1::vector
+      LIMIT $3`,
+    [toSql(queryEmbedding), documentId, k],
+  );
+  return rows.map((r) => toChunk(r, Number(r.similarity)));
+}
+
+/**
+ * Top-k chunks by Postgres full-text rank. The question's words are OR-ed together
+ * (plainto_tsquery would AND them, and a natural-language question rarely matches every
+ * word), stemmed, and stripped of stop words by the 'english' configuration.
+ */
+export async function keywordSearch(pool: pg.Pool, documentId: number, query: string, k: number): Promise<RetrievedChunk[]> {
+  const { rows } = await pool.query(
+    `WITH q AS (
+       SELECT to_tsquery('english', replace(plainto_tsquery('english', $1)::text, ' & ', ' | ')) AS query
+     )
+     -- Normalization 1 divides by log(length), so long chunks don't win just by containing more words.
+     SELECT ${COLUMNS}, ts_rank_cd(tsv, q.query, 1) AS rank
+       FROM chunks, q
+      WHERE document_id = $2 AND q.query IS NOT NULL AND tsv @@ q.query
+      ORDER BY rank DESC, ordinal
+      LIMIT $3`,
+    [query, documentId, k],
+  );
+  return rows.map((r) => toChunk(r, 0));
 }

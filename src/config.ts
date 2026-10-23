@@ -6,6 +6,7 @@ const Env = z.object({
   OPENAI_API_KEY: z.string().optional(),
   ANTHROPIC_API_KEY: z.string().optional(),
   ANSWER_MODEL: z.string().default("claude-sonnet-5-5"),
+  JUDGE_MODEL: z.string().default("claude-sonnet-5-5"),
   EMBEDDING_MODEL: z.string().default("text-embedding-3-small"),
   PORT: z.coerce.number().default(3000),
 });

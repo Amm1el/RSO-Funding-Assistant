@@ -11,8 +11,9 @@ function fakeDeps(rows: object[]) {
   });
   const deps = {
     pool: { query: vi.fn().mockResolvedValue({ rows }) },
-    embedder: { embed: vi.fn().mockResolvedValue([[0.1, 0.2]]) },
-    generator: { generate },
+    documentId: 1,
+    embedder: { name: "fake", minSimilarity: 0.25, embed: vi.fn().mockResolvedValue([[0.1, 0.2]]) },
+    generator: { name: "fake", generate },
   } as unknown as Deps;
   return { deps, generate };
 }
@@ -31,6 +32,7 @@ describe("POST /api/ask", () => {
     const res = await request(createApp(deps)).post("/api/ask").send({ question: "What is the hotel limit?" });
     expect(res.status).toBe(200);
     expect(res.body).toMatchObject({ answerable: true, citations: [{ section: "LODGING", pages: "12", quote: "$225 per night" }] });
+    expect(res.body.passages[0]).toMatchObject({ section: "LODGING", pageStart: 12 });
   });
 
   it("skips the model when nothing relevant is retrieved", async () => {
