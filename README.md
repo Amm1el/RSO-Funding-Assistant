@@ -62,6 +62,10 @@ CI runs the keyless eval on every push and fails below 85% retrieval hit rate or
 
 ## Run it
 
+**Quickest (no Docker, no API keys, just Node 22):** on Windows, double-click `start-windows.bat`. Anywhere else, run `npm install && npm run demo`. It downloads the manual, builds the UI, loads everything into an embedded Postgres (PGlite, with pgvector) under `data/pglite`, and opens http://localhost:3000. Later runs start in a few seconds.
+
+**Full setup** (real Postgres in Docker, the setup used in CI and production):
+
 Requirements: Node 22, Docker. API keys are optional, and unused until you set `USE_AI=true`.
 
 ```bash

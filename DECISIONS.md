@@ -103,5 +103,8 @@ The original plan had `packages/core`, `packages/db` and so on. The codebase is 
 ### 22. `tsx` at runtime instead of a compile step
 The server runs TypeScript through `tsx` in production too. That's one fewer build artifact to keep in sync, at the cost of a slower cold start. At this scale it's the right trade; for a high-traffic service I'd compile to JavaScript.
 
+### 26. Embedded Postgres (PGlite) for the zero-setup demo
+`DATABASE_URL=pglite://data/pglite` runs real Postgres compiled to WebAssembly, with pgvector, inside the Node process. Same schema, same SQL, same code path; a small `DbPool` interface hides which one is behind it. It makes `npm run demo` (and the integration tests) work with only Node installed. It's single-connection and single-process, so production stays on a Postgres server.
+
 ### 23. First-boot ingest in the container
 `scripts/start.sh` migrates, ingests the manual if the database has none, then starts the server. A fresh deploy needs no manual database steps, and restarts skip the ingest.
