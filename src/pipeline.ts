@@ -3,6 +3,9 @@ import { keywordSearch, searchChunks } from "./db.js";
 import type { Embedder } from "./embeddings.js";
 import { finalizeAnswer, type AnswerGenerator } from "./answer.js";
 import type { Answer, RetrievedChunk } from "./types.js";
+import { reciprocalRankFusion } from "./fusion.js";
+
+export { reciprocalRankFusion };
 
 export interface Deps {
   pool: DbPool;
@@ -17,26 +20,6 @@ export type RetrievalMode = "hybrid" | "vector";
 export const TOP_K = 6;
 /** How many candidates each search contributes before fusion. */
 const CANDIDATES = 20;
-/** Standard RRF constant: dampens the gap between rank 1 and rank 2. */
-const RRF_K = 60;
-
-/**
- * Reciprocal rank fusion: each list votes 1 / (60 + rank) for each item. It combines
- * rankings without needing their scores to be on the same scale, which vector similarity
- * and full-text rank are not.
- */
-export function reciprocalRankFusion<T extends { id: number }>(lists: T[][], k = RRF_K): { item: T; score: number }[] {
-  const scores = new Map<number, { item: T; score: number }>();
-  for (const list of lists) {
-    list.forEach((item, rank) => {
-      const entry = scores.get(item.id) ?? { item, score: 0 };
-      entry.score += 1 / (k + rank + 1);
-      scores.set(item.id, entry);
-    });
-  }
-  return [...scores.values()].sort((a, b) => b.score - a.score);
-}
-
 /**
  * Finds the manual passages most relevant to a question.
  *

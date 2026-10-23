@@ -16,7 +16,7 @@ const EXAMPLES = [
   "What is the maximum hotel rate per night?",
   "Will SGA reimburse Uber rides on a trip?",
   "When are receipts due after a purchase?",
-  "Can SGA pay for parking passes for our members?",
+  "Can SGA pay for our members' tuition?",
 ];
 
 export function App() {

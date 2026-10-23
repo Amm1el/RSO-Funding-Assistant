@@ -1,5 +1,6 @@
 node_modules/
 web/dist/
+web/dist-static/
 .env
 data/*.pdf
 data/pglite/

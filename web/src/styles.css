@@ -39,6 +39,22 @@
   }
 }
 
+:root[data-theme="dark"] {
+  --page: #1a1416;
+  --band: #221a1c;
+  --sheet: #261d20;
+  --ink: #eee8e3;
+  --ink-soft: #b4aaa5;
+  --rule: #3d3134;
+  --link: #e2c98e;
+  --highlight: #6a5426;
+  --highlight-ink: #fbf3df;
+  --notice-bg: #3a2228;
+  --notice-ink: #f1d3da;
+  color-scheme: dark;
+}
+
+
 *,
 *::before,
 *::after {
@@ -56,7 +72,8 @@ body {
 .wrap {
   max-width: 48rem;
   margin: 0 auto;
-  padding: 0 1rem;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
 }
 
 a {
@@ -188,6 +205,10 @@ main.wrap {
   :root:not([data-theme="light"]) .question {
     color: var(--gold);
   }
+}
+
+:root[data-theme="dark"] .question {
+  color: var(--gold);
 }
 
 .pending {

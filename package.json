@@ -22,7 +22,8 @@
     "build": "npm run build -w web",
     "eval:offline": "tsx src/cli/eval.ts --generator extractive",
     "start:prod": "sh scripts/start.sh",
-    "demo": "tsx src/cli/demo.ts"
+    "demo": "tsx src/cli/demo.ts",
+    "build:static": "npm run build:static -w web"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.135.0",

@@ -8,7 +8,9 @@
     "strict": true,
     "skipLibCheck": true,
     "noEmit": true,
-    "types": []
+    "types": [],
+    "resolveJsonModule": true,
+    "allowImportingTsExtensions": false
   },
-  "include": ["src", "vite.config.ts"]
+  "include": ["src", "vite.config.ts", "../src/hash-embedder.ts", "../src/fusion.ts", "../src/extractive.ts", "../src/citations.ts", "../src/types.ts"]
 }

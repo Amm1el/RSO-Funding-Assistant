@@ -23,7 +23,11 @@ export interface AskResponse {
   generator: string;
 }
 
+/** In the static (phone) build there is no server: the pipeline runs in the page. */
+const STATIC = import.meta.env.MODE === "static";
+
 export async function askQuestion(question: string, signal?: AbortSignal): Promise<AskResponse> {
+  if (STATIC) return (await import("./engine")).askLocally(question);
   let res: Response;
   try {
     res = await fetch("/api/ask", {
@@ -51,6 +55,7 @@ export interface Health {
 }
 
 export async function fetchHealth(): Promise<Health> {
+  if (STATIC) return (await import("./engine")).localHealth();
   const res = await fetch("/health");
   if (!res.ok) throw new Error(`health ${res.status}`);
   return res.json();

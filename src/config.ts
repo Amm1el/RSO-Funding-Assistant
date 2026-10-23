@@ -33,4 +33,4 @@ export function requireKey(name: "OPENAI_API_KEY" | "ANTHROPIC_API_KEY"): string
   return value;
 }
 
-export const EMBEDDING_DIMENSIONS = 1536;
+export { EMBEDDING_DIMENSIONS } from "./hash-embedder.js";

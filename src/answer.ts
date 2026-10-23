@@ -1,7 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { z } from "zod";
 import { config, requireKey } from "./config.js";
-import type { Answer, Citation, RetrievedChunk } from "./types.js";
+import type { RetrievedChunk } from "./types.js";
 
 export const SYSTEM_PROMPT = `You answer questions from Florida State University registered student organizations (RSOs) about Student Government Association (SGA) funding.
 
@@ -54,31 +54,6 @@ export const ANSWER_TOOL: Anthropic.Tool = {
   },
 };
 
-/**
- * Keeps only citations that point at a real excerpt and whose quote actually appears in it.
- * This is the guard against the model inventing sources.
- */
-export function validateCitations(raw: AnswerToolInput["citations"], chunks: RetrievedChunk[]): Citation[] {
-  const squash = (s: string) => s.toLowerCase().replace(/\s+/g, " ").replace(/[“”]/g, '"').replace(/[‘’]/g, "'").trim();
-  const seen = new Set<string>();
-  const out: Citation[] = [];
-  for (const c of raw) {
-    const chunk = chunks[c.excerpt - 1];
-    if (!chunk) continue;
-    if (!squash(chunk.content).includes(squash(c.quote))) continue;
-    const key = `${chunk.id}:${c.quote}`;
-    if (seen.has(key)) continue;
-    seen.add(key);
-    out.push({
-      chunkId: chunk.id,
-      section: chunk.section,
-      pages: chunk.pageStart === chunk.pageEnd ? `${chunk.pageStart}` : `${chunk.pageStart}-${chunk.pageEnd}`,
-      quote: c.quote,
-    });
-  }
-  return out;
-}
-
 export interface AnswerGenerator {
   /** Shown in API responses and eval results, e.g. "claude:claude-sonnet-5-5" or "extractive". */
   readonly name: string;
@@ -109,18 +84,4 @@ export class ClaudeAnswerGenerator implements AnswerGenerator {
   }
 }
 
-/**
- * Turns the model's output into the API response. An answer that claims to be
- * answerable but has no surviving citation is downgraded to unanswerable.
- */
-export function finalizeAnswer(raw: AnswerToolInput, chunks: RetrievedChunk[]): Answer {
-  const citations = validateCitations(raw.citations, chunks);
-  if (raw.answerable && citations.length === 0) {
-    return {
-      answerable: false,
-      answer: "I couldn't find support for an answer in the Financial Manual. Please check with SGA directly.",
-      citations: [],
-    };
-  }
-  return { answerable: raw.answerable, answer: raw.answer, citations };
-}
+export { finalizeAnswer, validateCitations } from "./citations.js";
