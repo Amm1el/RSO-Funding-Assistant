@@ -86,6 +86,12 @@ The full Claude eval costs money, varies run to run, and needs secrets, which pu
 ### 9. MCP server
 `ask_funding_manual` and `search_funding_manual` let an assistant like Claude look up funding rules while helping an officer plan an event. It shares `runtime.ts` and `pipeline.ts` with the API, so the MCP tool, the web app and the eval all exercise the same code. Dependencies are created on the first tool call, so the server starts and lists its tools even before the database is reachable.
 
+### 24. AI is opt-in (`USE_AI`), and both copies of the manual live side by side
+With `USE_AI=false` (the default) the app makes no API calls even when keys are set: offline embeddings, extractive answers. That makes the working system demoable before spending anything, and makes "what does the LLM add?" a one-setting comparison. The manual is stored once per embedder (`UNIQUE (title, version, embedder)`), and the active copy is chosen by mode, so switching never needs a re-ingest and the keyless mode can never call OpenAI by accident.
+
+### 25. FSU look without FSU marks
+The UI uses garnet and gold so it reads as part of FSU student life, but no seal, logo, wordmark or copy of fsu.edu's layout. It's an unofficial tool, and the top strip and footer say so. A page that looked like the university's own site would invite people to treat its answers as official.
+
 ### 20. The UI shows the evidence, not just the answer
 Every answer shows the manual passage it came from, with the cited quote highlighted, using the same matching rule the server uses to verify citations. An officer about to spend money should be able to check the source in one glance. Passages that were searched but not cited are collapsed, and refusals are labeled.
 

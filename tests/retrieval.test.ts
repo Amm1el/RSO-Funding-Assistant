@@ -64,3 +64,33 @@ describe("embedders", () => {
     expect(() => embedderByName("mystery:model")).toThrow();
   });
 });
+
+describe("USE_AI switch", () => {
+  it("stays keyless by default even when keys are set", async () => {
+    const { vi } = await import("vitest");
+    vi.resetModules();
+    vi.stubEnv("USE_AI", "");
+    vi.stubEnv("ANTHROPIC_API_KEY", "sk-test");
+    vi.stubEnv("OPENAI_API_KEY", "sk-test");
+    const { createGenerator } = await import("../src/runtime.js");
+    const { defaultEmbedder } = await import("../src/embeddings.js");
+    expect(createGenerator().name).toBe("extractive");
+    expect(defaultEmbedder().name).toBe("hash:bow-1536");
+    vi.unstubAllEnvs();
+    vi.resetModules();
+  });
+
+  it("uses the keys when USE_AI=true", async () => {
+    const { vi } = await import("vitest");
+    vi.resetModules();
+    vi.stubEnv("USE_AI", "true");
+    vi.stubEnv("ANTHROPIC_API_KEY", "sk-test");
+    vi.stubEnv("OPENAI_API_KEY", "sk-test");
+    const { createGenerator } = await import("../src/runtime.js");
+    const { defaultEmbedder } = await import("../src/embeddings.js");
+    expect(createGenerator().name).toMatch(/^claude:/);
+    expect(defaultEmbedder().name).toMatch(/^openai:/);
+    vi.unstubAllEnvs();
+    vi.resetModules();
+  });
+});

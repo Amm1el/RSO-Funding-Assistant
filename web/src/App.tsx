@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
-import { askQuestion, pageLabel, type AskResponse, type Passage } from "./api";
+import { askQuestion, fetchHealth, pageLabel, type AskResponse, type Health, type Passage } from "./api";
 import { highlight } from "./highlight";
 
 interface Exchange {
@@ -10,11 +10,13 @@ interface Exchange {
   error?: string;
 }
 
+// Chosen to work in both modes, including one the manual doesn't cover (it should refuse).
 const EXAMPLES = [
-  "What's the most RSOAC can give us this year?",
-  "Can we buy food for an officer meeting with 6 people?",
-  "How far ahead does a trip need approval in FSU HQ?",
+  "What's the most RSOAC will fund per organization this year?",
+  "What is the maximum hotel rate per night?",
   "Will SGA reimburse Uber rides on a trip?",
+  "When are receipts due after a purchase?",
+  "Can SGA pay for parking passes for our members?",
 ];
 
 export function App() {
@@ -56,16 +58,23 @@ export function App() {
   }
 
   return (
-    <div className="page">
+    <>
+      <div className="utility">
+        <div className="wrap">Unofficial student-built tool for FSU registered student organizations</div>
+      </div>
       <header className="masthead">
-        <h1>Ask the RSO Financial Manual</h1>
-        <p className="lede">
-          Questions about SGA funding for FSU student organizations, answered only from the 2026–27 Registered Student Organization
-          Financial Manual. Every answer shows the passage it came from.
-        </p>
+        <div className="wrap">
+          <p className="kicker">SGA funding, 2026–27</p>
+          <h1>RSO Funding Assistant</h1>
+          <p className="lede">
+            Ask about RSOAC requests, travel, purchasing, and receipts. Answers come only from the 2026–27 Registered Student
+            Organization Financial Manual, and every answer shows the passage it came from.
+          </p>
+        </div>
       </header>
 
-      <main>
+      <main className="wrap">
+        <ModeBanner />
         {exchanges.length === 0 && (
           <section className="examples" aria-label="Example questions">
             <p>Try one of these:</p>
@@ -116,12 +125,38 @@ export function App() {
           )}
         </form>
 
-        <p className="disclaimer">
-          Not official SGA advice. When something isn't in the manual, it says so. For anything else, contact SGA Accounting at{" "}
-          <a href="mailto:sgaaccounting@fsu.edu">sgaaccounting@fsu.edu</a>.
-        </p>
       </main>
-    </div>
+
+      <footer className="site-footer">
+        <div className="wrap">
+          <p>
+            Not official SGA or FSU advice. When something isn't in the manual, the assistant says so. For anything else, contact SGA
+            Accounting: Student Union 3268, (850) 644-7574, <a href="mailto:sgaaccounting@fsu.edu">sgaaccounting@fsu.edu</a>.
+          </p>
+          <p>
+            Source:{" "}
+            <a href="https://sga.fsu.edu/sites/default/files/PDFs/Accounting/26-27SGAFM.pdf">2026–27 RSO Financial Manual (PDF)</a>
+          </p>
+        </div>
+      </footer>
+    </>
+  );
+}
+
+/** Says which mode the server is in, so a demo without API keys is labeled as such. */
+function ModeBanner() {
+  const [health, setHealth] = useState<Health | null>(null);
+  useEffect(() => {
+    fetchHealth().then(setHealth).catch(() => setHealth(null));
+  }, []);
+  if (!health) return null;
+  const ai = health.generator !== "extractive";
+  return (
+    <p className={ai ? "mode-banner ai" : "mode-banner"}>
+      {ai
+        ? "AI answers on: Claude writes each answer from the retrieved passages, and every quote is checked against the manual."
+        : "Running without AI: answers are the closest sentences quoted straight from the manual. No API keys in use."}
+    </p>
   );
 }
 
@@ -152,7 +187,7 @@ function AnswerView({ response }: { response: AskResponse }) {
       {!response.answerable && <p className="verdict">The manual doesn't answer this.</p>}
       {response.generator === "extractive" && response.answerable && (
         <p className="mode-note">
-          Closest match in the manual. AI answers are off on this server, so this is a direct quote and may not fully answer the question.
+          Closest match, quoted from the manual. It may not fully answer the question.
         </p>
       )}
       <p className="answer-text">{response.answer}</p>

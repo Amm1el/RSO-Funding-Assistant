@@ -8,6 +8,14 @@ loadEnv({ path: fileURLToPath(new URL("../.env", import.meta.url)), quiet: true 
 
 const Env = z.object({
   DATABASE_URL: z.string().default("postgres://rso:rso@localhost:5432/rso"),
+  /**
+   * Off by default: the app runs without any API calls even when keys are set, so it can be
+   * demoed (and tested) keyless. Set USE_AI=true to use OpenAI embeddings and Claude answers.
+   */
+  USE_AI: z
+    .enum(["true", "false", "1", "0", ""])
+    .default("false")
+    .transform((v) => v === "true" || v === "1"),
   OPENAI_API_KEY: z.string().optional(),
   ANTHROPIC_API_KEY: z.string().optional(),
   ANSWER_MODEL: z.string().default("claude-sonnet-5-5"),

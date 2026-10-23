@@ -21,7 +21,7 @@ export interface DocumentInfo {
   chunks: number;
 }
 
-/** Replaces any previous ingest of the same title/version in one transaction. */
+/** Replaces any previous ingest of the same title, version and embedder in one transaction. */
 export async function saveDocument(
   pool: pg.Pool,
   doc: { title: string; version: string; sourceFile: string; embedder: string },
@@ -32,7 +32,7 @@ export async function saveDocument(
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
-    await client.query("DELETE FROM documents WHERE title = $1 AND version = $2", [doc.title, doc.version]);
+    await client.query("DELETE FROM documents WHERE title = $1 AND version = $2 AND embedder = $3", [doc.title, doc.version, doc.embedder]);
     const { rows } = await client.query<{ id: number }>(
       "INSERT INTO documents (title, version, source_file, embedder) VALUES ($1, $2, $3, $4) RETURNING id",
       [doc.title, doc.version, doc.sourceFile, doc.embedder],
@@ -56,12 +56,20 @@ export async function saveDocument(
   }
 }
 
-/** The document questions are answered from: the most recently ingested one. */
-export async function getActiveDocument(pool: pg.Pool): Promise<DocumentInfo | null> {
+/**
+ * The document questions are answered from. `providers` lists the embedding providers
+ * allowed in the current mode, most preferred first (e.g. ["openai", "hash"]); within a
+ * provider, the most recent ingest wins.
+ */
+export async function getActiveDocument(pool: pg.Pool, providers: string[] = ["hash"]): Promise<DocumentInfo | null> {
   const { rows } = await pool.query(
     `SELECT d.id, d.title, d.version, d.embedder, count(c.id)::int AS chunks
-       FROM documents d LEFT JOIN chunks c ON c.document_id = d.id
-      GROUP BY d.id ORDER BY d.ingested_at DESC, d.id DESC LIMIT 1`,
+       FROM documents d JOIN chunks c ON c.document_id = d.id
+      WHERE split_part(d.embedder, ':', 1) = ANY($1)
+      GROUP BY d.id
+      ORDER BY array_position($1, split_part(d.embedder, ':', 1)), d.ingested_at DESC, d.id DESC
+      LIMIT 1`,
+    [providers],
   );
   return rows[0] ?? null;
 }

@@ -7,12 +7,13 @@ Environment variables:
 | Variable | Required | What it does |
 |---|---|---|
 | `DATABASE_URL` | yes | Postgres connection string. The database must allow `CREATE EXTENSION vector`. |
-| `ANTHROPIC_API_KEY` | no | Turns on Claude-written answers. Without it, answers are direct quotes (extractive mode). |
-| `OPENAI_API_KEY` | no | Turns on OpenAI embeddings for ingest. Without it, the offline hash embedder is used. |
+| `USE_AI` | no | `false` by default: no API calls, even with keys set. `true` uses the keys below. |
+| `ANTHROPIC_API_KEY` | no | With `USE_AI=true`, Claude writes answers. Otherwise answers are direct quotes (extractive mode). |
+| `OPENAI_API_KEY` | no | With `USE_AI=true`, OpenAI embeddings are used. Otherwise the offline hash embedder is used. |
 | `ANSWER_MODEL` | no | Defaults to `claude-sonnet-5-5`. |
 | `PORT` | no | Defaults to 3000. Most hosts set this for you. |
 
-**Changing embedders needs a re-ingest.** The embedder is recorded with the ingested manual, and questions are always embedded with the same one. If the first boot ingested with the offline embedder and you add `OPENAI_API_KEY` later, run `npm run ingest -- data/26-27SGAFM.pdf` against the production `DATABASE_URL` once, from your machine. `/health` shows which embedder and generator are live.
+**Turning AI on.** The manual is stored once per embedder and the copy is picked by mode. With `USE_AI=true` and `OPENAI_API_KEY` set, the next container start ingests an OpenAI copy next to the offline one; after that, flipping `USE_AI` switches instantly. `/health` shows which embedder and generator are live.
 
 ## Option A: Render + Neon (free tiers, simplest)
 

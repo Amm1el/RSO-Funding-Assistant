@@ -21,10 +21,10 @@ const STOP = new Set(
   ),
 );
 
-/** A tiny suffix stripper: "receipts" → "receipt", "recorded" → "record", "longer" → "long". */
+/** A tiny suffix stripper: "receipts" → "receipt", "recorded" → "record", "reimbursement" → "reimburse". */
 export function stem(word: string): string {
   if (word.length <= 4) return word;
-  for (const suffix of ["ing", "ed", "er", "es", "s"]) {
+  for (const suffix of ["ment", "ing", "ed", "er", "es", "s"]) {
     if (word.endsWith(suffix) && !word.endsWith("ss") && word.length - suffix.length >= 3) return word.slice(0, -suffix.length);
   }
   return word;

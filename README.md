@@ -34,7 +34,7 @@ I chair SGA's RSO Allocation Committee (RSOAC), which reviews funding requests f
 4. **Answer** (`src/answer.ts`). Claude answers through a `submit_answer` tool schema: `answerable`, `answer`, and citations (passage number + exact quote).
 5. **Verify** citations in code. Quotes that don't appear in the cited passage are dropped; an answer left with no valid citation becomes "not answered".
 
-Without API keys, the same pipeline runs with an offline embedder and an extractive answerer that quotes the best-matching sentences. That's also the eval baseline.
+By default (`USE_AI=false`) the same pipeline runs with no API calls: an offline embedder and an extractive answerer that quotes the best-matching sentences. That's also the eval baseline. To turn AI on, add `OPENAI_API_KEY` and `ANTHROPIC_API_KEY` to `.env`, set `USE_AI=true`, and run `npm run ingest` once; the offline copy of the manual is kept, so you can switch back and forth by changing one line.
 
 ## Evaluation
 
@@ -62,11 +62,11 @@ CI runs the keyless eval on every push and fails below 85% retrieval hit rate or
 
 ## Run it
 
-Requirements: Node 22, Docker. API keys are optional.
+Requirements: Node 22, Docker. API keys are optional, and unused until you set `USE_AI=true`.
 
 ```bash
 npm install
-cp .env.example .env              # optional: add OPENAI_API_KEY and ANTHROPIC_API_KEY
+cp .env.example .env              # AI is off by default (USE_AI=false)
 npm run db:up                     # Postgres + pgvector in Docker
 curl -fsSL -o data/26-27SGAFM.pdf https://sga.fsu.edu/sites/default/files/PDFs/Accounting/26-27SGAFM.pdf
 npm run ingest -- data/26-27SGAFM.pdf

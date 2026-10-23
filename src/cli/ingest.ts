@@ -5,7 +5,8 @@ import { readPdfPages } from "../ingest/pdf.js";
 import { chunkPages, parseTableOfContents, DEFAULT_MAX_WORDS, DEFAULT_OVERLAP_WORDS } from "../ingest/chunk.js";
 
 // Usage: npm run ingest -- data/26-27SGAFM.pdf [--version 2026-27] [--offline] [--max-words 300] [--overlap 50]
-// Uses OpenAI embeddings when OPENAI_API_KEY is set; --offline forces the local hash embedder.
+// Uses OpenAI embeddings when USE_AI=true and OPENAI_API_KEY is set; otherwise (or with --offline)
+// the local hash embedder.
 const args = process.argv.slice(2);
 const flag = (name: string) => (args.includes(name) ? args[args.indexOf(name) + 1] : undefined);
 const valueFlags = new Set(["--version", "--max-words", "--overlap"]);

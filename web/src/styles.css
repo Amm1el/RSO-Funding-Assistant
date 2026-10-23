@@ -1,32 +1,40 @@
-/* Tokens: form-paper blue-gray, navy ink, highlighter yellow. Serif = the manual's words. */
+/* Garnet and gold, FSU's colors, on a clean white page. The manual's own words are set
+   in serif on white sheets; cited quotes get a gold highlight. No FSU logos or seal:
+   this is an unofficial tool and shouldn't look like the university's own site. */
 :root {
-  --paper: #eef1f4;
+  --garnet: #782f40;
+  --garnet-deep: #5c1f2e;
+  --gold: #ceb888;
+  --page: #ffffff;
+  --band: #f6f3ef;
   --sheet: #ffffff;
-  --ink: #1c2b3a;
-  --ink-soft: #4f5f70;
-  --rule: #c9d2dc;
-  --accent: #23548a;
-  --highlight: #ffe36e;
-  --highlight-ink: #1c2b3a;
-  --warn-bg: #f6ece6;
-  --warn-ink: #7a3320;
+  --ink: #2c2a29;
+  --ink-soft: #5e5856;
+  --rule: #ded7cf;
+  --link: #782f40;
+  --highlight: #ecdcb0;
+  --highlight-ink: #2c2a29;
+  --notice-bg: #f6eef0;
+  --notice-ink: #5c1f2e;
   --sans: "Public Sans Variable", system-ui, sans-serif;
   --serif: "Source Serif 4 Variable", Georgia, serif;
+  --display: "Barlow Condensed", "Arial Narrow", sans-serif;
   color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --paper: #131b24;
-    --sheet: #1b2531;
-    --ink: #e4e9ef;
-    --ink-soft: #a3b0bd;
-    --rule: #33414f;
-    --accent: #8fb8e6;
-    --highlight: #6b5a12;
-    --highlight-ink: #fff6cc;
-    --warn-bg: #3a231c;
-    --warn-ink: #f2c3b3;
+    --page: #1a1416;
+    --band: #221a1c;
+    --sheet: #261d20;
+    --ink: #eee8e3;
+    --ink-soft: #b4aaa5;
+    --rule: #3d3134;
+    --link: #e2c98e;
+    --highlight: #6a5426;
+    --highlight-ink: #fbf3df;
+    --notice-bg: #3a2228;
+    --notice-ink: #f1d3da;
     color-scheme: dark;
   }
 }
@@ -39,63 +47,118 @@
 
 body {
   margin: 0;
-  background: var(--paper);
+  background: var(--page);
   color: var(--ink);
   font: 400 1rem/1.55 var(--sans);
   -webkit-font-smoothing: antialiased;
 }
 
-.page {
-  max-width: 46rem;
+.wrap {
+  max-width: 48rem;
   margin: 0 auto;
-  padding: 3.5rem 1rem 4rem;
+  padding: 0 1rem;
+}
+
+a {
+  color: var(--link);
+  text-underline-offset: 0.15em;
+}
+
+:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 2px;
+}
+
+/* ---- Header: a slim deep-garnet strip, then the garnet masthead with a gold rule ---- */
+.utility {
+  background: var(--garnet-deep);
+  color: #f3e9ea;
+  font-size: 0.8125rem;
+  padding: 0.4rem 0;
+}
+
+.masthead {
+  background: var(--garnet);
+  color: #fff;
+  border-bottom: 5px solid var(--gold);
+  padding: 2.25rem 0 2.5rem;
+}
+
+.masthead .kicker {
+  margin: 0 0 0.25rem;
+  color: var(--gold);
+  font-weight: 600;
+  font-size: 0.9375rem;
 }
 
 .masthead h1 {
-  font-size: clamp(1.75rem, 4vw, 2.4rem);
-  font-weight: 650;
-  line-height: 1.15;
-  letter-spacing: -0.015em;
-  margin: 0 0 0.75rem;
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: clamp(2.5rem, 7vw, 3.75rem);
+  line-height: 0.95;
+  letter-spacing: 0.005em;
+  margin: 0 0 1rem;
 }
 
 .lede {
-  color: var(--ink-soft);
+  margin: 0;
   max-width: 38rem;
-  margin: 0 0 2.5rem;
+  color: #f6eced;
+  font-size: 1.0625rem;
 }
 
-.examples p {
-  margin: 0 0 0.5rem;
-  color: var(--ink-soft);
+main.wrap {
+  padding-top: 2rem;
+  padding-bottom: 3rem;
+}
+
+/* ---- Mode banner ---- */
+.mode-banner {
+  margin: 0 0 1.75rem;
+  padding: 0.65rem 0.9rem;
+  background: var(--band);
+  border-left: 4px solid var(--gold);
   font-size: 0.9375rem;
+  color: var(--ink-soft);
+}
+
+.mode-banner.ai {
+  border-left-color: var(--garnet);
+}
+
+/* ---- Example questions ---- */
+.examples p {
+  margin: 0 0 0.6rem;
+  font-weight: 600;
 }
 
 .examples ul {
   list-style: none;
   padding: 0;
   margin: 0 0 2rem;
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
   gap: 0.5rem;
 }
 
 .examples button {
+  width: 100%;
   font: inherit;
-  font-size: 0.9375rem;
+  text-align: left;
   color: var(--ink);
   background: var(--sheet);
   border: 1px solid var(--rule);
-  border-radius: 999px;
-  padding: 0.4rem 0.9rem;
+  border-left: 4px solid var(--garnet);
+  border-radius: 0;
+  padding: 0.65rem 0.9rem;
   cursor: pointer;
-  text-align: left;
 }
 
 .examples button:hover:not(:disabled) {
-  border-color: var(--accent);
+  background: var(--band);
+  border-left-color: var(--gold);
 }
 
+/* ---- Conversation ---- */
 .thread {
   list-style: none;
   padding: 0;
@@ -107,10 +170,24 @@ body {
   border-top: 1px solid var(--rule);
 }
 
+.exchange:first-child {
+  border-top: 0;
+  padding-top: 0.5rem;
+}
+
 .question {
-  font-weight: 650;
-  font-size: 1.125rem;
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 1.6rem;
+  line-height: 1.1;
+  color: var(--garnet);
   margin: 0 0 0.75rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .question {
+    color: var(--gold);
+  }
 }
 
 .pending {
@@ -120,10 +197,9 @@ body {
 
 .error {
   margin: 0;
-  color: var(--warn-ink);
-  background: var(--warn-bg);
+  color: var(--notice-ink);
+  background: var(--notice-bg);
   padding: 0.6rem 0.8rem;
-  border-radius: 6px;
 }
 
 .answer-text {
@@ -136,33 +212,30 @@ body {
   display: inline-block;
   margin: 0 0 0.5rem;
   padding: 0.15rem 0.6rem;
-  border-radius: 4px;
-  background: var(--warn-bg);
-  color: var(--warn-ink);
+  background: var(--notice-bg);
+  color: var(--notice-ink);
   font-size: 0.875rem;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .mode-note {
   color: var(--ink-soft);
   font-size: 0.875rem;
-  margin: 0 0 0.4rem;
-  max-width: 40rem;
+  margin: 0 0 0.35rem;
 }
 
 .sources h2 {
   font-size: 0.9375rem;
-  font-weight: 500;
-  color: var(--ink-soft);
+  font-weight: 600;
   margin: 1.5rem 0 0.75rem;
 }
 
-/* The manual's own words: a white sheet, serif, with the cited quote highlighted. */
+/* The manual's own words: a white sheet with a garnet edge, serif, gold highlight on the quote. */
 .passage {
   margin: 0 0 0.75rem;
   background: var(--sheet);
   border: 1px solid var(--rule);
-  border-radius: 4px;
+  border-top: 3px solid var(--garnet);
   padding: 0.9rem 1.1rem 1rem;
 }
 
@@ -177,7 +250,7 @@ body {
 }
 
 .passage .section {
-  font-weight: 500;
+  font-weight: 600;
   color: var(--ink);
 }
 
@@ -192,7 +265,6 @@ body {
   background: var(--highlight);
   color: var(--highlight-ink);
   padding: 0.05em 0.1em;
-  border-radius: 2px;
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
 }
@@ -203,20 +275,25 @@ body {
 
 .others summary {
   cursor: pointer;
-  color: var(--accent);
+  color: var(--link);
   font-size: 0.9375rem;
+  font-weight: 500;
   margin-bottom: 0.75rem;
   width: fit-content;
 }
 
+/* ---- Ask form ---- */
 .ask {
   margin-top: 1.5rem;
+  padding: 1.25rem;
+  background: var(--band);
+  border-top: 3px solid var(--gold);
 }
 
 .ask label {
   display: block;
-  font-weight: 500;
-  margin-bottom: 0.4rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
 }
 
 .ask-row {
@@ -232,30 +309,28 @@ body {
   color: var(--ink);
   background: var(--sheet);
   border: 1px solid var(--rule);
-  border-radius: 6px;
+  border-radius: 0;
   padding: 0.6rem 0.75rem;
   resize: vertical;
 }
 
 .ask textarea[aria-invalid="true"] {
-  border-color: var(--warn-ink);
+  border-color: var(--garnet);
 }
 
 .ask button {
   font: inherit;
-  font-weight: 650;
+  font-weight: 700;
   color: #fff;
-  background: var(--accent);
+  background: var(--garnet);
   border: 0;
-  border-radius: 6px;
-  padding: 0 1.4rem;
+  border-radius: 0;
+  padding: 0 1.6rem;
   cursor: pointer;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .ask button {
-    color: #0f1822;
-  }
+.ask button:hover:not(:disabled) {
+  background: var(--garnet-deep);
 }
 
 .ask button:disabled,
@@ -265,34 +340,46 @@ body {
 }
 
 .field-error {
-  color: var(--warn-ink);
+  color: var(--notice-ink);
   font-size: 0.875rem;
   margin: 0.4rem 0 0;
 }
 
-.disclaimer {
-  margin-top: 2.5rem;
+/* ---- Footer ---- */
+.site-footer {
+  background: var(--garnet-deep);
+  color: #efe2e4;
+  border-top: 5px solid var(--gold);
+  padding: 1.75rem 0;
   font-size: 0.875rem;
-  color: var(--ink-soft);
 }
 
-a {
-  color: var(--accent);
+.site-footer p {
+  margin: 0 0 0.5rem;
+  max-width: 42rem;
 }
 
-:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
+.site-footer a {
+  color: var(--gold);
 }
 
 @media (max-width: 30rem) {
-  .page {
-    padding-top: 2rem;
+  .masthead {
+    padding: 1.75rem 0 2rem;
+  }
+  .ask {
+    padding: 1rem;
   }
   .ask-row {
     flex-direction: column;
   }
   .ask button {
-    padding: 0.7rem;
+    padding: 0.75rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    scroll-behavior: auto !important;
   }
 }

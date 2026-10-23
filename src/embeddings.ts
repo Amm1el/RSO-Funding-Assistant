@@ -76,7 +76,7 @@ export function embedderByName(name: string): Embedder {
   throw new Error(`Unknown embedder "${name}"`);
 }
 
-/** Uses OpenAI when a key is set, otherwise the offline hash embedder. */
+/** OpenAI only when USE_AI=true and a key is set; otherwise the offline hash embedder. */
 export function defaultEmbedder(): Embedder {
-  return config.OPENAI_API_KEY ? new OpenAIEmbedder() : new HashEmbedder();
+  return config.USE_AI && config.OPENAI_API_KEY ? new OpenAIEmbedder() : new HashEmbedder();
 }

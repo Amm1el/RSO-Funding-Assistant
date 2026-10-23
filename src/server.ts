@@ -52,5 +52,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   createApp(deps).listen(config.PORT, () => {
     console.log(`RSO Funding Assistant on http://localhost:${config.PORT}`);
     console.log(`  manual ${deps.document.version}, ${deps.embedder.name} retrieval, ${deps.generator.name} answers`);
+    if (!config.USE_AI) console.log("  USE_AI is off: no API calls. Set USE_AI=true (and re-ingest for OpenAI embeddings) to turn AI on.");
+    else if (deps.embedder.name.startsWith("hash:") && config.OPENAI_API_KEY)
+      console.log("  USE_AI is on, but the manual was ingested offline. Run npm run ingest to switch to OpenAI embeddings.");
   });
 }

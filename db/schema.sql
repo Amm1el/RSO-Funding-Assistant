@@ -15,6 +15,11 @@ CREATE TABLE IF NOT EXISTS documents (
 -- with the same model, or the similarity scores are meaningless.
 ALTER TABLE documents ADD COLUMN IF NOT EXISTS embedder TEXT NOT NULL DEFAULT 'openai:text-embedding-3-small';
 
+-- The same manual can be ingested once per embedder (offline and OpenAI side by side),
+-- so turning USE_AI on or off switches instantly without re-ingesting.
+ALTER TABLE documents DROP CONSTRAINT IF EXISTS documents_title_version_key;
+CREATE UNIQUE INDEX IF NOT EXISTS documents_title_version_embedder ON documents (title, version, embedder);
+
 -- One row per chunk of manual text, with its embedding.
 CREATE TABLE IF NOT EXISTS chunks (
   id          SERIAL PRIMARY KEY,

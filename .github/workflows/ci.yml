@@ -73,6 +73,7 @@ jobs:
           --health-cmd "pg_isready -U rso" --health-interval 5s --health-timeout 5s --health-retries 10
     env:
       DATABASE_URL: postgres://rso:rso@localhost:5432/rso
+      USE_AI: "true"
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
     steps:

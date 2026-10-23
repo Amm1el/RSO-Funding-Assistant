@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { existsSync } from "node:fs";
 import type pg from "pg";
-import { createPool, migrate, saveDocument, searchChunks } from "../src/db.js";
+import { createPool, getActiveDocument, migrate, saveDocument, searchChunks } from "../src/db.js";
 import { HashEmbedder } from "../src/embeddings.js";
 import { readPdfPages } from "../src/ingest/pdf.js";
 import { chunkPages, parseTableOfContents } from "../src/ingest/chunk.js";
@@ -42,6 +42,15 @@ describe.skipIf(!url)("Postgres + pgvector", () => {
     await saveDocument(pool, { title: "Test Manual", version: "t1", sourceFile: "t.pdf", embedder: embedder.name }, chunks, vectors);
     const { rows } = await pool.query("SELECT count(*)::int AS n FROM chunks");
     expect(rows[0].n).toBe(3);
+  });
+
+  it("keeps one copy per embedder and picks the copy the current mode allows", async () => {
+    const vectors = await embedder.embed(chunks.map((c) => c.content));
+    const hashId = await saveDocument(pool, { title: "Modes", version: "m1", sourceFile: "m.pdf", embedder: "hash:bow-1536" }, chunks, vectors);
+    const openaiId = await saveDocument(pool, { title: "Modes", version: "m1", sourceFile: "m.pdf", embedder: "openai:text-embedding-3-small" }, chunks, vectors);
+    expect((await getActiveDocument(pool, ["hash"]))?.id).toBe(hashId);
+    expect((await getActiveDocument(pool, ["openai", "hash"]))?.id).toBe(openaiId);
+    expect(await getActiveDocument(pool, ["voyage"])).toBeNull();
   });
 
   it("rolls back when chunks and embeddings don't line up", async () => {

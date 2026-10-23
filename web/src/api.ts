@@ -41,3 +41,17 @@ export async function askQuestion(question: string, signal?: AbortSignal): Promi
 }
 
 export const pageLabel = (start: number, end: number) => (start === end ? `page ${start}` : `pages ${start}–${end}`);
+
+export interface Health {
+  ok: boolean;
+  manual?: string;
+  chunks: number;
+  embedder: string;
+  generator: string;
+}
+
+export async function fetchHealth(): Promise<Health> {
+  const res = await fetch("/health");
+  if (!res.ok) throw new Error(`health ${res.status}`);
+  return res.json();
+}
