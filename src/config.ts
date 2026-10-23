@@ -1,5 +1,10 @@
-import "dotenv/config";
+import { config as loadEnv } from "dotenv";
+import { fileURLToPath } from "node:url";
 import { z } from "zod";
+
+// Load .env from the repo root, not the current directory: Claude Desktop starts the
+// MCP server from its own working directory.
+loadEnv({ path: fileURLToPath(new URL("../.env", import.meta.url)), quiet: true });
 
 const Env = z.object({
   DATABASE_URL: z.string().default("postgres://rso:rso@localhost:5432/rso"),
