@@ -1,6 +1,6 @@
 # Design decisions
 
-Why the project is built the way it is. Each entry is a likely interview question: what I chose, what I gave up, and how I know it was the right call. Entries 1–9 are from v0.1; 10 onward are from v0.2.
+Why the project is built the way it is. Each entry is a likely interview question: what I chose, what I gave up, and how I know it was the right call. Entries 1–9 are from v0.1, 10–26 from v0.2, and 27 onward from v0.3, which grew the corpus from one manual to everything SGA publishes.
 
 ## Ingestion
 
@@ -108,3 +108,37 @@ The server runs TypeScript through `tsx` in production too. That's one fewer bui
 
 ### 23. First-boot ingest in the container
 `scripts/start.sh` migrates, ingests the manual if the database has none, then starts the server. A fresh deploy needs no manual database steps, and restarts skip the ingest.
+
+## v0.3: from one manual to everything SGA publishes
+
+### 27. Crawl in GitHub Actions, not on a laptop or in the app
+sga.fsu.edu isn't reachable from every network I develop on, and a crawl takes ~40 minutes. A scheduled workflow (`crawl.yml`, Mondays + on demand) crawls and force-pushes the output as JSONL to a `corpus-data` branch; `npm run corpus:pull` fetches it with plain git. The app never crawls at request time, the data is versioned, and anyone can rebuild the same corpus.
+**Scope:** sga.fsu.edu and sai.fsu.edu fully, one hop to other *.fsu.edu pages, every linked PDF/DOCX, the Constitution/Statutes/COGS code books, and CivicClerk meeting records.
+
+### 28. A polite crawler, and taking "no" for an answer
+robots.txt is parsed per RFC 9309 (longest match wins), requests to a host are spaced 400 ms apart, retries back off, and the User-Agent names the project and a contact. The code site's JSON endpoints answer "Unauthorized Access" to scripts, so instead of working around that, the crawler renders the public pages in a real browser (Playwright) like a visitor would and splits them at section headings, with deep links to each section. Meetings come from CivicClerk's public API, which the portal itself uses.
+
+### 29. Sections ("collections") assigned per chunk, not per site
+A code book covers elections, funding and agencies in different chapters; one PDF can be a budget or an agency's minutes. Each chunk gets a collection (funding, governance, elections, agencies, cogs, meetings, resources) from its chapter number when it has one (800s = funding, 700s = elections, 900–1099 = agencies), else from URL and title rules. The UI's tabs search one collection, which is the cheapest relevance boost there is: a question asked under Funding never sees agency minutes.
+
+### 30. Authority weights: the current rule beats history
+The crawl turned up 2,768 documents, most of them old budgets, minutes and bills that quote rules which have since changed. Retrieval on the full corpus collapsed to **16% pass / 36% hit / MRR 0.26** on the same eval that scored 54% on the manual alone. Each source now gets a weight multiplied into the fused score: code books 1.0, SGA pages 0.9, current-year documents 1.0, last year's 0.55, older 0.45, recent meetings 0.75, old meetings and amending bills 0.35–0.4. The academic year is read from titles, file names and the first page ("26-27SGAFM", "FY27", "2025-2026").
+**Why multiply rather than filter:** history is sometimes the answer ("what did RSOAC fund last year?"), so it's demoted, not dropped.
+
+### 31. Drop near-duplicate documents, keep the newest
+The same manual is linked from several pages in two editions. Word 5-shingles with ≥80% overlap mark a near-duplicate; the newest (academic year, then "updated" in the name, then length) is kept. Weights + dedupe took the full corpus to 21% / 52% / 0.42.
+
+### 32. BM25 in Postgres instead of `ts_rank_cd`
+At 26,000 chunks, Postgres's full-text rank stopped separating good matches from long chunks that mention a word often. A `chunk_terms(term, chunk_id, tf)` inverted index (1.9M rows), filled at ingest with the same stemmer the embedder uses, lets one SQL query compute real BM25 (k1 = 1.2, b = 0.75) with corpus-wide document frequencies. The offline embedder was upgraded the same way (stemmed tokens, sublinear term frequency). Together: **37% pass / 89% hit / MRR 0.76** over all sources, **41% / 91% / 0.83** inside the Funding section, and the phone build runs the identical BM25 in the browser.
+
+### 33. Real questions from the RSOAC inbox, anonymized
+16 eval cases are questions students actually emailed RSOAC, paraphrased, with no names, organizations, emails or org-specific amounts, marked `origin: "rsoac-inbox"` and `verified: false` until reviewed. They're harder than the questions I wrote from the manual (keyless passes 2 of 16) because students describe their situation instead of using the manual's terms ("can we place the order now?" vs. "purchase order"). That gap is the honest case for the LLM answerer, and it's measured rather than asserted.
+
+### 34. The eval set follows the current manual edition
+SGA re-posted the manual on 9/21/26 with real policy changes: RSOAC travel covers "transportation" (was "mileage"), the "request from the Development Fund first" step and the Uber/Lyft line are gone, receipts go in the purchase-request chat or to SGA Accounting, and reimbursement uses the SGA/COGS Travel & Purchase Request Form in FSU HQ. `tests/eval-set.test.ts` validates against the crawled updated edition, which is how those changes surfaced: four cases failed validation, each traced to a changed sentence.
+
+### 35. The directory lists offices, not people
+Contacts are pulled from published pages and documents, only for FSU office and position inboxes (`sga-sbt@`, `sai-wsu@`, `cogsdepspeaker@`). Students' personal accounts, minutes, agendas and forwarded-email headers are skipped, and well-known inboxes are labeled by role so the directory is still right after elections. 526 noisy entries became 60 useful ones. Meeting places and the next scheduled meetings come from CivicClerk.
+
+### 36. Local AI (Ollama) as a third answerer, and no fake API keys
+`USE_AI=true` picks Claude if a key is set, else a local model through Ollama (`LOCAL_MODEL`, JSON-schema output, same citation verification), else the extractive answerer. That gives a free, private AI mode for demos. Invented API keys aren't an option: they'd fail on the first request, and using someone else's would be worse.

@@ -1,6 +1,6 @@
 # Deploying
 
-The app is one Docker image (API + web UI) plus a Postgres database with the pgvector extension. On first boot the container creates the schema and ingests the manual baked into the image, so a fresh database needs no manual steps.
+The app is one Docker image (API + web UI) plus a Postgres database with the pgvector extension. On first boot the container creates the schema and ingests the sources baked into the image (the crawl in `data/corpus`, ~26,000 chunks, a few minutes; or just the manual if there's no crawl), so a fresh database needs no manual steps. Run `npm run corpus:pull` before building to ship the latest crawl. The full corpus needs about 1.5 GB of database storage (most of it the vector index and BM25 terms); Neon's free tier is 0.5 GB, so use a paid tier or set `MANUAL_PATH` and remove `data/corpus` for a manual-only deploy.
 
 Environment variables:
 
@@ -19,7 +19,7 @@ Environment variables:
 
 1. **Database (Neon).** Create a project at neon.tech and copy the connection string (it ends in `?sslmode=require`). Neon supports pgvector; the app enables it itself.
 2. **App (Render).** New → Web Service → connect `Amm1el/rso-funding-assistant`. Runtime: Docker. Add the environment variables above. Health check path: `/health`.
-3. Deploy. The first boot logs `No manual in the database yet; ingesting ...`, then `RSO Funding Assistant on http://localhost:...`.
+3. Deploy. The first boot logs `No sources in the database yet; ingesting ...`, then the server's start-up line.
 
 Free Render services sleep when idle, so the first request after a while takes a few seconds.
 
