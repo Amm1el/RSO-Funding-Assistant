@@ -7,6 +7,8 @@ COPY package.json package-lock.json ./
 COPY web/package.json web/
 RUN npm ci
 COPY web web
+# The browser engine reuses a few server modules (retrieval, extractive answers, citation checks).
+COPY src src
 RUN npm run build -w web
 
 # ---- Runtime: API + built UI + the sources ----
