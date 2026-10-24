@@ -4,7 +4,8 @@
  *   2. builds the web UI if it isn't built
  *   3. stores everything in embedded Postgres (PGlite) under data/pglite
  *   4. ingests the manual the first time, then starts the server and opens the browser
- * Flags: --no-open (don't open a browser), --use-database-url (use DATABASE_URL instead of PGlite)
+ *   (with everything SGA publishes when the crawled corpus can be pulled; otherwise just the manual)
+ * Flags: --no-open, --manual-only, --use-database-url (use DATABASE_URL instead of PGlite)
  */
 import { existsSync } from "node:fs";
 import { mkdir, writeFile } from "node:fs/promises";
@@ -21,9 +22,10 @@ const MANUAL_URL = "https://sga.fsu.edu/sites/default/files/PDFs/Accounting/26-2
 
 // Imported after DATABASE_URL is set, because config reads the environment on import.
 const { config } = await import("../config.js");
-const { createPool, getActiveDocument, migrate } = await import("../db.js");
+const { createPool, getActiveCorpus, migrate } = await import("../db.js");
+const { loadCorpus, manualAsDoc, DEFAULT_CORPUS_DIR } = await import("../corpus/load.js");
+const { ingestCorpus } = await import("../corpus/ingest.js");
 const { defaultEmbedder } = await import("../embeddings.js");
-const { ingestManual } = await import("../ingest/run.js");
 const { allowedProviders, createDeps } = await import("../runtime.js");
 const { createApp } = await import("../server.js");
 
@@ -41,18 +43,27 @@ if (!existsSync(join(root, "web", "dist", "index.html"))) {
   if (build.status !== 0) throw new Error("Web build failed; see the output above.");
 }
 
+// Everything SGA publishes, if a crawl is available: try to pull the latest one.
+if (!args.includes("--manual-only")) {
+  const pull = spawnSync("npx", ["tsx", "src/cli/corpus-pull.ts"], { cwd: root, stdio: "inherit", shell: true });
+  if (pull.status !== 0) console.log("Couldn't pull the crawled corpus; using what's on disk.");
+}
+const corpusDocs = args.includes("--manual-only") ? [] : await loadCorpus(join(root, DEFAULT_CORPUS_DIR));
+
 const pool = createPool();
 await migrate(pool);
-if (!(await getActiveDocument(pool, allowedProviders().slice(0, 1)))) {
-  console.log("Loading the manual into the database (first run only)...");
-  await ingestManual(pool, manual, defaultEmbedder());
+const existing = await getActiveCorpus(pool, allowedProviders().slice(0, 1));
+const stale = corpusDocs.length > 0 && (existing?.documents ?? 0) < corpusDocs.length * 0.9;
+if (!existing || stale) {
+  console.log(corpusDocs.length ? `Loading ${corpusDocs.length} SGA sources (first run takes a few minutes)...` : "Loading the Financial Manual (first run only)...");
+  await ingestCorpus(pool, corpusDocs.length ? corpusDocs : [await manualAsDoc(manual)], defaultEmbedder());
 }
 
 const deps = await createDeps(pool);
 const url = `http://localhost:${config.PORT}`;
 createApp(deps).listen(config.PORT, () => {
   console.log(`\nRSO Funding Assistant is running at ${url}`);
-  console.log(`  ${deps.embedder.name} retrieval, ${deps.generator.name} answers${config.USE_AI ? "" : " (USE_AI is off: no API calls)"}`);
+  console.log(`  ${deps.corpus.documents} sources, ${deps.embedder.name} retrieval, ${deps.generator.name} answers${config.USE_AI ? "" : " (USE_AI is off: no API calls)"}`);
   console.log("  Press Ctrl+C to stop.\n");
   if (!args.includes("--no-open")) openBrowser(url);
 });

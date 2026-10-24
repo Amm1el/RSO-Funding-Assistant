@@ -9,10 +9,14 @@ export { reciprocalRankFusion };
 
 export interface Deps {
   pool: DbPool;
-  /** The ingested manual to answer from. */
-  documentId: number;
+  /** Embeds questions; its name also selects which stored corpus to search. */
   embedder: Embedder;
   generator: AnswerGenerator;
+}
+
+export interface AskOptions {
+  /** Limit the search to one app section, e.g. "funding". */
+  collection?: string | null;
 }
 
 export type RetrievalMode = "hybrid" | "vector";
@@ -29,17 +33,19 @@ const CANDIDATES = 20;
  *    and the two rankings are merged with reciprocal rank fusion.
  */
 export async function retrieve(
-  deps: Pick<Deps, "pool" | "embedder" | "documentId">,
+  deps: Pick<Deps, "pool" | "embedder">,
   question: string,
   k = TOP_K,
   mode: RetrievalMode = "hybrid",
+  opts: AskOptions = {},
 ): Promise<RetrievedChunk[]> {
+  const scope = { embedder: deps.embedder.name, collection: opts.collection ?? null };
   const [embedding] = await deps.embedder.embed([question]);
-  const byVector = await searchChunks(deps.pool, deps.documentId, embedding, CANDIDATES);
+  const byVector = await searchChunks(deps.pool, scope, embedding, CANDIDATES);
   if (!byVector.length || byVector[0].similarity < deps.embedder.minSimilarity) return [];
   if (mode === "vector") return byVector.slice(0, k);
 
-  const byKeyword = await keywordSearch(deps.pool, deps.documentId, question, CANDIDATES);
+  const byKeyword = await keywordSearch(deps.pool, scope, question, CANDIDATES);
   const similarity = new Map(byVector.map((c) => [c.id, c.similarity]));
   return reciprocalRankFusion([byVector, byKeyword])
     .slice(0, k)
@@ -56,12 +62,12 @@ export interface AskResult extends Answer {
 }
 
 /** Retrieve, then answer. Skips the generator entirely when nothing relevant is found. */
-export async function ask(deps: Deps, question: string): Promise<AskResult> {
-  const chunks = await retrieve(deps, question);
+export async function ask(deps: Deps, question: string, opts: AskOptions = {}): Promise<AskResult> {
+  const chunks = await retrieve(deps, question, TOP_K, "hybrid", opts);
   if (chunks.length === 0) {
     return {
       answerable: false,
-      answer: "The Financial Manual doesn't seem to cover that. Please contact SGA Accounting (sgaaccounting@fsu.edu).",
+      answer: "SGA's published sources don't seem to cover that. For funding questions, contact SGA Accounting (sgaaccounting@fsu.edu).",
       citations: [],
       retrieved: 0,
       generator: deps.generator.name,

@@ -15,10 +15,20 @@ CREATE TABLE IF NOT EXISTS documents (
 -- with the same model, or the similarity scores are meaningless.
 ALTER TABLE documents ADD COLUMN IF NOT EXISTS embedder TEXT NOT NULL DEFAULT 'openai:text-embedding-3-small';
 
--- The same manual can be ingested once per embedder (offline and OpenAI side by side),
--- so turning USE_AI on or off switches instantly without re-ingesting.
+-- v0.3: documents come from many sources (web pages, PDFs, code books, meetings).
+ALTER TABLE documents ADD COLUMN IF NOT EXISTS url TEXT;
+ALTER TABLE documents ADD COLUMN IF NOT EXISTS kind TEXT NOT NULL DEFAULT 'document';
+ALTER TABLE documents ADD COLUMN IF NOT EXISTS collection TEXT NOT NULL DEFAULT 'funding';
+ALTER TABLE documents ADD COLUMN IF NOT EXISTS parent TEXT;
+ALTER TABLE documents ADD COLUMN IF NOT EXISTS fetched_at TIMESTAMPTZ;
+
+-- Each source is stored once per embedder (offline and OpenAI side by side), so turning
+-- USE_AI on or off switches instantly without re-ingesting. A source is identified by its
+-- URL, or by title + version for local files.
 ALTER TABLE documents DROP CONSTRAINT IF EXISTS documents_title_version_key;
-CREATE UNIQUE INDEX IF NOT EXISTS documents_title_version_embedder ON documents (title, version, embedder);
+DROP INDEX IF EXISTS documents_title_version_embedder;
+CREATE UNIQUE INDEX IF NOT EXISTS documents_identity ON documents ((coalesce(url, title || '@' || version)), embedder);
+CREATE INDEX IF NOT EXISTS documents_embedder ON documents (embedder);
 
 -- One row per chunk of manual text, with its embedding.
 CREATE TABLE IF NOT EXISTS chunks (
@@ -32,6 +42,12 @@ CREATE TABLE IF NOT EXISTS chunks (
   embedding   vector(1536) NOT NULL,
   UNIQUE (document_id, ordinal)
 );
+
+-- v0.3: a deep link per chunk, and the app section it belongs to.
+ALTER TABLE chunks ADD COLUMN IF NOT EXISTS url TEXT;
+ALTER TABLE chunks ADD COLUMN IF NOT EXISTS collection TEXT NOT NULL DEFAULT 'funding';
+CREATE INDEX IF NOT EXISTS chunks_collection ON chunks (collection);
+CREATE INDEX IF NOT EXISTS chunks_document ON chunks (document_id);
 
 -- Approximate nearest-neighbor index for cosine distance.
 CREATE INDEX IF NOT EXISTS chunks_embedding_hnsw

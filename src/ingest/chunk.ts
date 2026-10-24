@@ -65,6 +65,36 @@ export interface ChunkOptions {
   maxWords?: number;
   /** Words repeated between consecutive chunks inside one section, so a rule split across a boundary still appears whole. */
   overlapWords?: number;
+  /** Label for text before the first heading (or all text, when there are no headings). */
+  defaultSection?: string;
+  /** Lines to drop as running headers/footers, normalized with boilerplateKey(). */
+  boilerplate?: Set<string>;
+}
+
+/** Lowercase, digits and spaces removed, so "Manual 2026-2027 12" and "... 13" compare equal. */
+export function boilerplateKey(line: string): string {
+  return line.toLowerCase().replace(/[\d\s]+/g, "");
+}
+
+/**
+ * Running headers and footers: short lines that appear on at least half of a document's
+ * pages (and on at least 3). Found per document instead of hard-coded.
+ */
+export function detectBoilerplate(pages: string[]): Set<string> {
+  const counts = new Map<string, number>();
+  for (const page of pages) {
+    const keys = new Set(
+      page
+        .split(/\r?\n/)
+        .map((l) => l.trim())
+        .filter((l) => l && l.length < 120)
+        .map(boilerplateKey)
+        .filter((k) => k.length >= 4),
+    );
+    for (const k of keys) counts.set(k, (counts.get(k) ?? 0) + 1);
+  }
+  const threshold = Math.max(3, Math.ceil(pages.length / 2));
+  return new Set([...counts].filter(([, n]) => n >= threshold).map(([k]) => k));
 }
 
 /**
@@ -85,7 +115,8 @@ export function toParagraphs(pages: string[], options: ChunkOptions = {}): Parag
   const headingMap = new Map((options.headings ?? []).map((h) => [normalizeHeading(h), h]));
   const skip = new Set(options.skipPages ?? []);
   const paragraphs: Paragraph[] = [];
-  let section = "Front matter";
+  let section = options.defaultSection ?? "Front matter";
+  const boilerplate = options.boilerplate ?? new Set<string>();
   // A heading followed directly by another heading (no body text between) is a parent,
   // e.g. "Financial Certification" then "Requirements". The child is labeled
   // "Financial Certification: Requirements" so a citation isn't just "Requirements".
@@ -107,7 +138,7 @@ export function toParagraphs(pages: string[], options: ChunkOptions = {}): Parag
         flush();
         continue;
       }
-      if (BOILERPLATE.some((re) => re.test(line))) continue;
+      if (BOILERPLATE.some((re) => re.test(line)) || boilerplate.has(boilerplateKey(line))) continue;
       const heading = matchHeading(line, headingMap);
       if (heading) {
         flush();

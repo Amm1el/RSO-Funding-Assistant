@@ -5,6 +5,7 @@ import { z } from "zod";
 import { createPool } from "./db.js";
 import { ask, retrieve, type Deps } from "./pipeline.js";
 import { createDeps } from "./runtime.js";
+import { COLLECTIONS, COLLECTION_IDS } from "./corpus/collections.js";
 
 /**
  * Exposes the assistant to MCP clients (Claude Desktop, Claude Code) over stdio,
@@ -15,33 +16,38 @@ import { createDeps } from "./runtime.js";
 let deps: Promise<Deps> | undefined;
 const getDeps = () => (deps ??= createDeps(createPool()));
 
-export const server = new McpServer({ name: "rso-funding-assistant", version: "0.2.0" });
+export const server = new McpServer({ name: "rso-funding-assistant", version: "0.3.0" });
+
+const SECTION = z
+  .enum(COLLECTION_IDS as unknown as [string, ...string[]])
+  .optional()
+  .describe(`Limit to one section: ${COLLECTIONS.map((c) => `${c.id} (${c.label})`).join(", ")}`);
 
 server.registerTool(
-  "ask_funding_manual",
+  "ask_sga",
   {
-    title: "Ask the FSU RSO Financial Manual",
+    title: "Ask FSU Student Government",
     description:
-      "Answers a question about FSU SGA funding rules for registered student organizations (RSOAC limits, prohibited purchases, travel, receipts, deadlines), citing manual sections and pages. Returns answerable=false when the manual doesn't cover the question.",
-    inputSchema: { question: z.string().min(3).max(500) },
+      "Answers a question from FSU Student Government Association's published sources: the RSO Financial Manual, the Constitution and Statutes (incl. the Finance and Election Codes), COGS code, sga.fsu.edu and agency pages, linked documents, and Senate/COGS/funding-board meetings. Cites each source with a link. Returns answerable=false when the sources don't cover the question.",
+    inputSchema: { question: z.string().min(3).max(500), section: SECTION },
   },
-  async ({ question }) => {
-    const { passages: _passages, ...result } = await ask(await getDeps(), question);
+  async ({ question, section }) => {
+    const { passages: _passages, ...result } = await ask(await getDeps(), question, { collection: section });
     return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
   },
 );
 
 server.registerTool(
-  "search_funding_manual",
+  "search_sga",
   {
-    title: "Search the FSU RSO Financial Manual",
-    description: "Returns the manual passages most relevant to a query, with section and page numbers, without generating an answer.",
-    inputSchema: { query: z.string().min(3).max(500), k: z.number().int().min(1).max(10).optional() },
+    title: "Search FSU Student Government sources",
+    description: "Returns the passages most relevant to a query from SGA's published sources, each with its source title, section and link, without generating an answer.",
+    inputSchema: { query: z.string().min(3).max(500), k: z.number().int().min(1).max(10).optional(), section: SECTION },
   },
-  async ({ query, k }) => {
-    const chunks = await retrieve(await getDeps(), query, k ?? 5);
+  async ({ query, k, section }) => {
+    const chunks = await retrieve(await getDeps(), query, k ?? 5, "hybrid", { collection: section });
     const text = chunks
-      .map((c) => `## ${c.section} (p. ${c.pageStart}${c.pageEnd !== c.pageStart ? `-${c.pageEnd}` : ""})\n${c.content}`)
+      .map((c) => `## ${c.title ? `${c.title} › ` : ""}${c.section}${c.pageStart ? ` (p. ${c.pageStart}${c.pageEnd !== c.pageStart ? `-${c.pageEnd}` : ""})` : ""}\n${c.url ?? ""}\n${c.content}`)
       .join("\n\n");
     return { content: [{ type: "text", text: text || "No relevant passages found." }] };
   },

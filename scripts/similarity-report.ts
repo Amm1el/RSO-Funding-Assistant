@@ -9,7 +9,7 @@ const pool = createPool();
 const deps = await createDeps(pool, "extractive");
 for (const c of await loadEvalCases("evals/questions.jsonl")) {
   const [e] = await deps.embedder.embed([c.question]);
-  const [top] = await searchChunks(pool, deps.documentId, e, 1);
+  const [top] = await searchChunks(pool, { embedder: deps.embedder.name }, e, 1);
   console.log(`${c.answerable ? "answerable  " : "UNANSWERABLE"} ${top.similarity.toFixed(3)}  ${c.id}`);
 }
 console.log(`\ncurrent cutoff for ${deps.embedder.name}: ${deps.embedder.minSimilarity}`);

@@ -21,7 +21,11 @@ const REPO_ROOT = fileURLToPath(new URL("../", import.meta.url));
  */
 export function createDbPool(connectionString: string): DbPool {
   if (connectionString.startsWith("pglite:")) return createPglitePool(connectionString.replace(/^pglite:(\/\/)?/, ""));
-  return new pg.Pool({ connectionString }) as unknown as DbPool;
+  const pool = new pg.Pool({ connectionString });
+  // HNSW returns this many candidates before WHERE filters apply; a section filter needs
+  // more than the default 40 so filtered searches still fill their top-k.
+  pool.on("connect", (client) => void client.query("SET hnsw.ef_search = 400").catch(() => {}));
+  return pool as unknown as DbPool;
 }
 
 function createPglitePool(location: string): DbPool {
@@ -29,7 +33,9 @@ function createPglitePool(location: string): DbPool {
   // Loaded lazily so the regular Postgres path never pays for the WebAssembly bundle.
   const ready = (async () => {
     const [{ PGlite }, { vector }] = await Promise.all([import("@electric-sql/pglite"), import("@electric-sql/pglite-pgvector")]);
-    return PGlite.create({ dataDir, extensions: { vector } });
+    const db = await PGlite.create({ dataDir, extensions: { vector } });
+    await db.exec("SET hnsw.ef_search = 400").catch(() => {});
+    return db;
   })();
 
   // PGlite is a single connection. Statements are serialized by PGlite itself; transactions take

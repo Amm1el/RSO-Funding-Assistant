@@ -175,7 +175,7 @@ export async function crawl(opts: CrawlOptions) {
         docs.push({
           id: docId(url),
           url,
-          title: ("title" in parsed && typeof parsed.title === "string" && parsed.title) || text || fileName.replace(/\.(pdf|docx)$/i, "").replace(/[-_]+/g, " "),
+          title: text || ("title" in parsed && typeof parsed.title === "string" && parsed.title) || fileName.replace(/\.(pdf|docx)$/i, "").replace(/[-_]+/g, " "),
           kind: "document",
           host: new URL(url).host,
           fetchedAt: new Date().toISOString(),

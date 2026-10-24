@@ -12,8 +12,8 @@ describe("MCP server", () => {
     const client = new Client({ name: "test", version: "1.0.0" });
     await client.connect(clientSide);
     const { tools } = await client.listTools();
-    expect(tools.map((t) => t.name).sort()).toEqual(["ask_funding_manual", "search_funding_manual"]);
-    expect(tools.find((t) => t.name === "ask_funding_manual")?.inputSchema.required).toEqual(["question"]);
+    expect(tools.map((t) => t.name).sort()).toEqual(["ask_sga", "search_sga"]);
+    expect(tools.find((t) => t.name === "ask_sga")?.inputSchema.required).toEqual(["question"]);
     await client.close();
   });
 });

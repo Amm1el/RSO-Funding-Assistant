@@ -1,6 +1,6 @@
 import type { DbPool } from "./dbpool.js";
 import { config } from "./config.js";
-import { getActiveDocument, type DocumentInfo } from "./db.js";
+import { getActiveCorpus, type CorpusInfo } from "./db.js";
 import { embedderByName } from "./embeddings.js";
 import { ClaudeAnswerGenerator, type AnswerGenerator } from "./answer.js";
 import { ExtractiveGenerator } from "./extractive.js";
@@ -15,30 +15,22 @@ export function createGenerator(choice: GeneratorChoice = "auto"): AnswerGenerat
   return new ExtractiveGenerator();
 }
 
-/**
- * Builds everything the API, MCP server, CLI and evals need from one place.
- * The embedder is chosen by the active document, so questions are always embedded
- * with the same model that embedded the manual.
- */
 /** Embedding providers usable right now, most preferred first. With USE_AI off, only the offline one. */
 export function allowedProviders(): string[] {
   return config.USE_AI && config.OPENAI_API_KEY ? ["openai", "hash"] : ["hash"];
 }
 
-export async function createDeps(pool: DbPool, generator: GeneratorChoice = "auto"): Promise<Deps & { document: DocumentInfo }> {
-  const document = await getActiveDocument(pool, allowedProviders());
-  if (!document) {
+/**
+ * Builds everything the API, MCP server, CLI and evals need from one place. The embedder
+ * comes from the stored corpus, so questions are always embedded with the same model that
+ * embedded the sources.
+ */
+export async function createDeps(pool: DbPool, generator: GeneratorChoice = "auto"): Promise<Deps & { corpus: CorpusInfo }> {
+  const corpus = await getActiveCorpus(pool, allowedProviders());
+  if (!corpus) {
     throw new Error(
-      config.USE_AI
-        ? "No manual has been ingested yet. Run: npm run ingest -- data/26-27SGAFM.pdf"
-        : "No offline copy of the manual yet (USE_AI is off). Run: npm run ingest -- data/26-27SGAFM.pdf --offline",
+      "Nothing has been ingested for the current mode yet. Run: npm run ingest:corpus (or npm run demo, which does it for you).",
     );
   }
-  return {
-    pool,
-    document,
-    documentId: document.id,
-    embedder: embedderByName(document.embedder),
-    generator: createGenerator(generator),
-  };
+  return { pool, corpus, embedder: embedderByName(corpus.embedder), generator: createGenerator(generator) };
 }

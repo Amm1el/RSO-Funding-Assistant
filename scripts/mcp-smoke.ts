@@ -9,7 +9,7 @@ const transport = new StdioClientTransport({ command: "npx", args: ["tsx", fileU
 const client = new Client({ name: "smoke-test", version: "1.0.0" });
 await client.connect(transport);
 console.log("tools:", (await client.listTools()).tools.map((t) => t.name).join(", "));
-for (const [name, args] of [["ask_funding_manual", { question }], ["search_funding_manual", { query: question, k: 2 }]] as const) {
+for (const [name, args] of [["ask_sga", { question }], ["search_sga", { query: question, k: 2 }]] as const) {
   const res = await client.callTool({ name, arguments: args });
   const text = (res.content as { type: string; text: string }[])[0].text;
   console.log(`\n--- ${name}\n${text.slice(0, 700)}`);

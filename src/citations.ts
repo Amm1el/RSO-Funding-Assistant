@@ -28,8 +28,11 @@ export function validateCitations(raw: RawAnswer["citations"], chunks: Retrieved
     out.push({
       chunkId: chunk.id,
       section: chunk.section,
-      pages: chunk.pageStart === chunk.pageEnd ? `${chunk.pageStart}` : `${chunk.pageStart}-${chunk.pageEnd}`,
+      pages: !chunk.pageStart ? "" : chunk.pageStart === chunk.pageEnd ? `${chunk.pageStart}` : `${chunk.pageStart}-${chunk.pageEnd}`,
       quote: c.quote,
+      ...(chunk.title ? { title: chunk.title } : {}),
+      ...(chunk.url ? { url: chunk.url } : {}),
+      ...(chunk.collection ? { collection: chunk.collection } : {}),
     });
   }
   return out;

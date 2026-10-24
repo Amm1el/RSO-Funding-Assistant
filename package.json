@@ -24,7 +24,9 @@
     "start:prod": "sh scripts/start.sh",
     "demo": "tsx src/cli/demo.ts",
     "build:static": "npm run build:static -w web",
-    "crawl": "tsx src/cli/crawl.ts"
+    "crawl": "tsx src/cli/crawl.ts",
+    "ingest:corpus": "tsx src/cli/ingest-corpus.ts",
+    "corpus:pull": "tsx src/cli/corpus-pull.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.135.0",
