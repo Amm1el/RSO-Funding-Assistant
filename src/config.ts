@@ -10,7 +10,8 @@ const Env = z.object({
   DATABASE_URL: z.string().default("postgres://rso:rso@localhost:5432/rso"),
   /**
    * Off by default: the app runs without any API calls even when keys are set, so it can be
-   * demoed (and tested) keyless. Set USE_AI=true to use OpenAI embeddings and Claude answers.
+   * demoed (and tested) keyless. Set USE_AI=true to use Claude/OpenAI (with keys) or a local
+   * Ollama model (LOCAL_MODEL / LOCAL_EMBEDDING_MODEL, free, no key).
    */
   USE_AI: z
     .enum(["true", "false", "1", "0", ""])
@@ -21,6 +22,12 @@ const Env = z.object({
   ANSWER_MODEL: z.string().default("claude-sonnet-5-5"),
   JUDGE_MODEL: z.string().default("claude-sonnet-5-5"),
   EMBEDDING_MODEL: z.string().default("text-embedding-3-small"),
+  /** Free local AI through Ollama (https://ollama.com), used when USE_AI=true and no API key is set. */
+  OLLAMA_URL: z.string().default("http://localhost:11434"),
+  /** A local chat model, e.g. "qwen2.5:7b" or "llama3.2:3b". */
+  LOCAL_MODEL: z.string().optional(),
+  /** A local embedding model, e.g. "nomic-embed-text". */
+  LOCAL_EMBEDDING_MODEL: z.string().optional(),
   PORT: z.coerce.number().default(3000),
 });
 

@@ -3,23 +3,30 @@ import { z } from "zod";
 import { config, requireKey } from "./config.js";
 import type { RetrievedChunk } from "./types.js";
 
-export const SYSTEM_PROMPT = `You answer questions from Florida State University registered student organizations (RSOs) about Student Government Association (SGA) funding.
+export const SYSTEM_PROMPT = `You answer questions about Florida State University's Student Government Association (SGA): RSO funding, the Constitution and Statutes, elections, agencies, the Congress of Graduate Students, meetings, and student resources.
 
 Rules:
-- Use ONLY the numbered manual excerpts provided. Never use outside knowledge about FSU or other schools.
-- If the excerpts do not contain the answer, set answerable to false and say what the manual does not cover. Suggest contacting SGA-RSOAC@fsu.edu only if the excerpts mention it.
+- Use ONLY the numbered excerpts provided. Never use outside knowledge about FSU or other schools.
+- If the excerpts do not contain the answer, set answerable to false and say what the sources do not cover.
 - Every factual claim must be supported by at least one cited excerpt. Cite by excerpt number.
 - For each citation, include a short quote copied word for word from that excerpt.
-- Be concise and practical: lead with the direct answer (yes/no, the limit, the deadline), then the conditions.`;
+- When excerpts disagree, prefer the governing document (Constitution over Statutes over manuals and web pages; newer over older) and say so.
+- Be concise and practical: lead with the direct answer (yes/no, the limit, the deadline, the office), then the conditions.`;
 
-/** Formats retrieved chunks as numbered excerpts the model can cite. */
+/** Formats retrieved chunks as numbered excerpts the model can cite, each with its source. */
 export function buildContext(chunks: RetrievedChunk[]): string {
   return chunks
     .map((c, i) => {
-      const pages = c.pageStart === c.pageEnd ? `p. ${c.pageStart}` : `pp. ${c.pageStart}-${c.pageEnd}`;
-      return `[${i + 1}] Section: ${c.section} (${pages})\n${c.content}`;
+      const pages = !c.pageStart ? "" : c.pageStart === c.pageEnd ? ` (p. ${c.pageStart})` : ` (pp. ${c.pageStart}-${c.pageEnd})`;
+      const source = c.title ? `Source: ${c.title}\n` : "";
+      return `[${i + 1}] ${source}Section: ${c.section}${pages}\n${c.content}`;
     })
     .join("\n\n");
+}
+
+/** The user turn sent to any model: excerpts, then the question. */
+export function buildUserMessage(question: string, chunks: RetrievedChunk[]): string {
+  return `Excerpts:\n\n${buildContext(chunks)}\n\nQuestion: ${question}`;
 }
 
 /** The structured output we force the model to produce, via a tool schema. */
@@ -74,7 +81,7 @@ export class ClaudeAnswerGenerator implements AnswerGenerator {
       messages: [
         {
           role: "user",
-          content: `Manual excerpts:\n\n${buildContext(chunks)}\n\nQuestion: ${question}`,
+          content: buildUserMessage(question, chunks),
         },
       ],
     });

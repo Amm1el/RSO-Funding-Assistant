@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import { config, requireKey } from "./config.js";
 import { HashEmbedder } from "./hash-embedder.js";
+import { OllamaEmbedder } from "./ollama.js";
 
 export { HashEmbedder };
 
@@ -38,6 +39,7 @@ export class OpenAIEmbedder implements Embedder {
 /** Recreates the embedder a document was ingested with, so questions use the same model. */
 export function embedderByName(name: string): Embedder {
   if (name.startsWith("hash:")) return new HashEmbedder();
+  if (name.startsWith("ollama:")) return new OllamaEmbedder(name.slice("ollama:".length));
   if (name.startsWith("openai:")) {
     if (name !== `openai:${config.EMBEDDING_MODEL}`) {
       throw new Error(`The manual was embedded with ${name} but EMBEDDING_MODEL is ${config.EMBEDDING_MODEL}. Re-ingest or change EMBEDDING_MODEL.`);
@@ -47,7 +49,9 @@ export function embedderByName(name: string): Embedder {
   throw new Error(`Unknown embedder "${name}"`);
 }
 
-/** OpenAI only when USE_AI=true and a key is set; otherwise the offline hash embedder. */
+/** With USE_AI on: OpenAI if keyed, else a local Ollama model if configured. Otherwise the offline hash embedder. */
 export function defaultEmbedder(): Embedder {
-  return config.USE_AI && config.OPENAI_API_KEY ? new OpenAIEmbedder() : new HashEmbedder();
+  if (config.USE_AI && config.OPENAI_API_KEY) return new OpenAIEmbedder();
+  if (config.USE_AI && config.LOCAL_EMBEDDING_MODEL) return new OllamaEmbedder(config.LOCAL_EMBEDDING_MODEL);
+  return new HashEmbedder();
 }
