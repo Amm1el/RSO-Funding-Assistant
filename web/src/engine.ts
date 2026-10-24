@@ -38,6 +38,7 @@ interface Index {
 }
 
 async function decode(): Promise<Payload> {
+  if (!CORPUS_GZ_BASE64) throw new Error("This build has no sources packed in. Build it with `npm run build:static`.");
   const bytes = Uint8Array.from(atob(CORPUS_GZ_BASE64), (c) => c.charCodeAt(0));
   const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream("gzip"));
   return JSON.parse(await new Response(stream).text());
