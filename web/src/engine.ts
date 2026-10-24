@@ -89,7 +89,10 @@ function candidates(ix: Index, query: string, allowed: (c: RetrievedChunk) => bo
   return [...seen];
 }
 
-function bm25(ix: Index, query: string, ids: number[]): RetrievedChunk[] {
+/** How many keyword matches the vector search re-scores (see askLocally). */
+const VECTOR_POOL = Number((globalThis as { VECTOR_POOL?: number }).VECTOR_POOL ?? 400);
+
+function bm25(ix: Index, query: string, ids: number[], limit = CANDIDATES): RetrievedChunk[] {
   const q = new Set(terms(query));
   const n = ix.chunks.length;
   const scored: { chunk: RetrievedChunk; score: number }[] = [];
@@ -105,7 +108,7 @@ function bm25(ix: Index, query: string, ids: number[]): RetrievedChunk[] {
     }
     if (score > 0) scored.push({ chunk: ix.chunks[i], score });
   });
-  return scored.sort((a, b) => b.score - a.score).slice(0, CANDIDATES).map((s) => s.chunk);
+  return scored.sort((a, b) => b.score - a.score).slice(0, limit).map((s) => s.chunk);
 }
 
 export async function askLocally(question: string, collection: string | null = null): Promise<AskResponse> {
@@ -113,7 +116,11 @@ export async function askLocally(question: string, collection: string | null = n
   const allowed = (c: RetrievedChunk) => !collection || c.collection === collection;
   // Vector search over the chunks sharing a word with the question: with the hashed
   // bag-of-words embedder, a chunk sharing none scores ~0 anyway. Embed them on first use.
-  const ids = candidates(ix, question, allowed);
+  const shared = candidates(ix, question, allowed);
+  // Common words ("year", "fund") appear in thousands of chunks; embedding all of them made
+  // the first question slow. Vector search re-scores the best keyword matches instead.
+  const keyword = bm25(ix, question, shared, Math.max(VECTOR_POOL, CANDIDATES));
+  const ids = keyword.map((c) => c.id - 1);
   const missing = ids.filter((i) => !ix.vectors[i]);
   if (missing.length) {
     const raw = await embedder.embed(missing.map((i) => `${ix.chunks[i].title}\n${ix.chunks[i].section}\n${ix.chunks[i].content}`));
@@ -142,7 +149,7 @@ export async function askLocally(question: string, collection: string | null = n
     };
   }
   const similarity = new Map(top.map((c) => [c.id, c.similarity]));
-  const passages = weightedFusion([top, bm25(ix, question, ids)])
+  const passages = weightedFusion([top, keyword.slice(0, CANDIDATES)])
     .slice(0, TOP_K)
     .map(({ item }) => ({ ...item, similarity: similarity.get(item.id) ?? 0 }));
   const answer = finalizeAnswer(extractAnswer(question, passages), passages);
