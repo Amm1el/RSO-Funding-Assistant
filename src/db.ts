@@ -191,3 +191,19 @@ export async function keywordSearch(pool: DbPool, scope: Scope, query: string, k
   );
   return rows.map((r) => toChunk(r, 0));
 }
+
+/** Stores a derived dataset (e.g. the directory) by key. */
+export async function setMeta(pool: DbPool, key: string, value: unknown): Promise<void> {
+  await pool.query(
+    `INSERT INTO meta (key, value, updated_at) VALUES ($1, $2::jsonb, now())
+     ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = now()`,
+    [key, JSON.stringify(value)],
+  );
+}
+
+export async function getMeta<T>(pool: DbPool, key: string): Promise<T | null> {
+  const { rows } = await pool.query<{ value: T | string }>("SELECT value FROM meta WHERE key = $1", [key]);
+  if (!rows[0]) return null;
+  // node-postgres parses jsonb; PGlite may hand back a string.
+  return typeof rows[0].value === "string" ? (JSON.parse(rows[0].value) as T) : rows[0].value;
+}

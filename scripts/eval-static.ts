@@ -1,6 +1,6 @@
 // Scores the in-browser engine (web/src/engine.ts) on the eval set, so the phone build's
 // quality is measured, not assumed. Usage: npx tsx scripts/eval-static.ts
-import { askLocally } from "../web/src/engine.js";
+import { askLocally } from "../web/src/engine.js"; // run scripts/export-static.ts first
 import { loadEvalCases, scoreCase, summarize } from "../src/evals.js";
 
 const results = [];

@@ -1,5 +1,6 @@
 import type { CorpusDoc } from "../crawl/types.js";
-import { replaceCorpus, type DbPool } from "../db.js";
+import { replaceCorpus, setMeta, type DbPool } from "../db.js";
+import { buildDirectory } from "./directory.js";
 import type { Embedder } from "../embeddings.js";
 import { docToChunks, type DocChunks } from "./chunk.js";
 import type { CollectionId } from "./collections.js";
@@ -43,6 +44,9 @@ export async function ingestCorpus(pool: DbPool, docs: CorpusDoc[], embedder: Em
     if (chunked.length > 50 && items.length % 200 === 0) log(`  embedded ${done.toLocaleString()} / ${total.toLocaleString()}`);
   }
   await replaceCorpus(pool, embedder.name, items);
+  const directory = buildDirectory(docs);
+  await setMeta(pool, "directory", directory);
+  log(`Directory: ${directory.contacts.length} contacts, ${directory.places.length} meeting places`);
 
   const collections: Record<string, number> = {};
   for (const { chunks } of chunked) for (const c of chunks) collections[c.collection!] = (collections[c.collection!] ?? 0) + 1;

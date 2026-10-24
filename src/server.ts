@@ -7,7 +7,8 @@ import { createPool } from "./db.js";
 import { ask, type Deps } from "./pipeline.js";
 import { createDeps } from "./runtime.js";
 import { COLLECTIONS, COLLECTION_IDS } from "./corpus/collections.js";
-import type { CorpusInfo } from "./db.js";
+import { getMeta, type CorpusInfo } from "./db.js";
+import type { Directory } from "./corpus/directory.js";
 
 const AskBody = z.object({
   question: z.string().trim().min(3).max(500),
@@ -38,6 +39,16 @@ export function createApp(deps: Deps & { corpus?: CorpusInfo }) {
   /** The app's sections, with how much each one holds. */
   app.get("/api/collections", (_req, res) => {
     res.json(COLLECTIONS.map((c) => ({ ...c, chunks: deps.corpus?.collections[c.id] ?? 0 })));
+  });
+
+  /** Offices, positions and meeting places found across the sources. */
+  app.get("/api/directory", async (_req, res) => {
+    try {
+      res.json((await getMeta<Directory>(deps.pool, "directory")) ?? { contacts: [], places: [], builtAt: null });
+    } catch (err) {
+      console.error(err);
+      res.status(502).json({ error: "Could not load the directory." });
+    }
   });
 
   app.post("/api/ask", async (req, res) => {

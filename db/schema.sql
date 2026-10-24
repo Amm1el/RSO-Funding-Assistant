@@ -71,3 +71,10 @@ ALTER TABLE chunks ADD COLUMN IF NOT EXISTS tsv tsvector
   GENERATED ALWAYS AS (to_tsvector('english', section || ' ' || replace(content, '/', ' '))) STORED;
 
 CREATE INDEX IF NOT EXISTS chunks_tsv_gin ON chunks USING gin (tsv);
+
+-- Small derived datasets built at ingest, such as the directory of contacts and places.
+CREATE TABLE IF NOT EXISTS meta (
+  key        TEXT PRIMARY KEY,
+  value      JSONB NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
