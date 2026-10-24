@@ -16,6 +16,7 @@ on:
 
 permissions:
   contents: write
+  issues: write
 
 concurrency:
   group: crawl
@@ -23,11 +24,11 @@ concurrency:
 
 jobs:
   crawl:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 150
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
@@ -38,6 +39,10 @@ jobs:
       - name: Show the report
         if: always()
         run: cat corpus/crawl-report.md >> "$GITHUB_STEP_SUMMARY" || true
+      - name: Refuse to publish a crawl that shrank by half
+        run: |
+          git fetch --depth 1 origin corpus-data && git show origin/corpus-data:manifest.json > previous-manifest.json || true
+          npx tsx scripts/check-crawl.ts corpus/manifest.json previous-manifest.json
       - name: Publish to the corpus-data branch
         env:
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -56,9 +61,19 @@ jobs:
           git add -A
           git commit -qm "Corpus crawled $(date -u +%Y-%m-%d)"
           git push -f "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" corpus-data
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: corpus
           path: corpus/
           retention-days: 14
+      # Nobody watches a weekly job. If it fails, open an issue (once) so it gets noticed.
+      - name: Open an issue if the crawl failed
+        if: failure() && github.event_name == 'schedule'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          title="Weekly SGA crawl failed"
+          if [ -z "$(gh issue list --state open --search "$title in:title" --json number --jq '.[].number')" ]; then
+            gh issue create --title "$title" --body "Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}. The app keeps serving last week's corpus until a crawl succeeds."
+          fi

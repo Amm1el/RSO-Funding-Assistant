@@ -12,7 +12,7 @@ env:
 jobs:
   # Every push: types, unit + pgvector integration tests, web build, and the keyless eval.
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     services:
       postgres:
         image: pgvector/pgvector:pg16
@@ -24,8 +24,8 @@ jobs:
         options: >-
           --health-cmd "pg_isready -U rso" --health-interval 5s --health-timeout 5s --health-retries 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
@@ -55,9 +55,9 @@ jobs:
 
   # Every push: the production image builds.
   docker:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - run: docker build -t rso-funding-assistant .
 
   # On demand (Actions tab > CI > Run workflow): real embeddings + Claude + LLM judge.
@@ -65,7 +65,7 @@ jobs:
   eval:
     needs: test
     if: github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     services:
       postgres:
         image: pgvector/pgvector:pg16
@@ -82,8 +82,8 @@ jobs:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
@@ -91,7 +91,7 @@ jobs:
       - run: npm run corpus:pull
       - run: npm run ingest:corpus
       - run: npm run eval -- --generator claude --judge
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: eval-results
