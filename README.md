@@ -8,9 +8,9 @@ I chair SGA's RSO Allocation Committee (RSOAC), which reviews funding requests f
 
 > Unofficial, student-built. Not official SGA advice.
 
-![Demo: asking about Uber reimbursement, hotel limits, and parking passes](docs/demo.gif)
+![Demo: a hotel-rate question with cited passages, a Statutes question, and the Directory's recent rule changes](docs/demo.gif)
 
-<sub>Recorded in keyless mode on the v0.2 single-manual build.</sub>
+<sub>Keyless mode (no API keys), phone build. Re-record with `scripts/record-demo.ts`.</sub>
 
 ## What's in it
 
@@ -23,7 +23,7 @@ I chair SGA's RSO Allocation Committee (RSOAC), which reviews funding requests f
 | Graduate Students (COGS) | COGS code, grants, graduate funding |
 | Meetings & Legislation | CivicClerk agendas and minutes for Senate, committees and funding boards; bills and resolutions |
 | Student Resources | SGA-funded services linked from sga.fsu.edu |
-| Directory | 60 office and position inboxes, 190 meeting places, the next scheduled meetings |
+| Directory | Recent rule changes between document editions, 60 office and position inboxes, 190 meeting places, the next scheduled meetings |
 
 ## How it works
 
@@ -43,7 +43,7 @@ I chair SGA's RSO Allocation Committee (RSOAC), which reviews funding requests f
                          web UI · phone build · REST API · MCP server · eval harness
 ```
 
-1. **Crawl** (`src/crawl/`). A polite crawler (robots.txt, per-host delay, honest User-Agent) runs weekly in GitHub Actions and commits its output to the `corpus-data` branch. Code books are rendered in a real browser; meetings come from CivicClerk's public API.
+1. **Crawl** (`src/crawl/`). A polite crawler (robots.txt, per-host delay, honest User-Agent) runs weekly in GitHub Actions and commits its output to the `corpus-data` branch. Code books are rendered in a real browser, scanned PDFs are OCR'd, and meetings come from CivicClerk's public API. A crawl that shrinks by half isn't published, and a failed one opens an issue.
 2. **Ingest** (`src/corpus/`). Each chunk is assigned a section (funding, elections, …) from its chapter number or URL. Each source gets an authority weight: the current manual and code beat last year's budget and old minutes. Near-duplicate editions are collapsed to the newest.
 3. **Retrieve** (`src/pipeline.ts`, `src/db.ts`). Vector search plus BM25 computed in SQL over an inverted index, merged by rank and multiplied by authority. Searching one section is the default from the UI.
 4. **Answer** (`src/answer.ts`, `src/ollama.ts`, `src/extractive.ts`). With AI on, Claude (or a local Ollama model) answers through a forced JSON schema with citations. With AI off, the best-matching sentences are quoted directly.
@@ -73,6 +73,8 @@ Keyless results (offline embedder + extractive answers), from `evals/history.jso
 | + BM25 in Postgres + stemmed embedder | 3,777 | **37%** | **89%** | **0.76** |
 | same, searching the Funding section | 3,777 | 41% | 91% | 0.83 |
 | + 16 RSOAC inbox questions (79 cases), Funding section | 3,777 | 37% | 87% | 0.79 |
+| + answerer weights rare words, quotes up to 3 sentences, Funding section | 3,777 | **49%** | 87% | 0.79 |
+| same, all sources | 3,777 | 38% | 84% | 0.72 |
 
 Growing the corpus 3,800× without losing retrieval quality is the main result of v0.3. The low pass rate is the extractive baseline's ceiling: it quotes sentences and can't tell when a question is off-topic (refusal 0–11%). Real student questions are harder still (2 of 16 pass) because students describe their situation instead of using the manual's terms. Closing those gaps is what the LLM answerer is for. **Next row:** `npm run eval -- --judge --record "..."` with AI on.
 
@@ -80,7 +82,7 @@ CI pulls the crawled corpus, ingests it, and fails below 80% retrieval hit rate 
 
 ## Run it
 
-**On a phone, nothing to install:** `npm run build:static` packs the corpus (meetings from the last 6 months) into one ~7 MB HTML file that runs the whole keyless pipeline in the browser.
+**On a phone, nothing to install:** `npm run build:static` packs the corpus (meetings from the last 6 months) into one ~7 MB HTML file that runs the whole keyless pipeline in the browser. It's usable in under a second and answers in ~0.2 s.
 
 **On a computer (Node 22, no Docker, no keys):** on Windows, double-click `start-windows.bat`. Anywhere else, run `npm install && npm run demo`. It pulls the latest crawl, loads it into an embedded Postgres (PGlite), and opens http://localhost:3000.
 
@@ -104,6 +106,10 @@ npm run dev & npm run dev:web     # API with reload + UI with hot reload on :517
 npm test                          # unit tests; set TEST_DATABASE_URL for pgvector integration tests
 npm run eval -- --collection funding --record "what I changed"
 npx tsx scripts/check-examples.ts # every example question in the UI, through the pipeline
+npx tsx scripts/a11y.ts           # accessibility audit (axe-core, WCAG 2.1 AA) of the phone build
+npx tsx scripts/stale-audit.ts    # questions where an outdated source ranks in the top 3
+npx tsx scripts/edition-changes.ts # what changed between document editions
+npx tsx scripts/feedback-to-evals.ts > drafts.jsonl  # wrong-answer reports as draft eval cases
 ```
 
 ### Use it from Claude Desktop or Claude Code (MCP)
@@ -141,7 +147,7 @@ One Docker image plus Postgres with pgvector. Step-by-step for Render + Neon (fr
 | `src/server.ts`, `web/` | Express API and React UI (also builds as a single-file phone app) |
 | `src/mcp.ts` | MCP server |
 | `src/evals.ts`, `src/judge.ts`, `src/cli/eval.ts`, `evals/` | Eval set, scoring, LLM judge, score history |
-| `tests/` | 140 tests: unit, crawler, pgvector integration, MCP client, eval set vs. manual |
+| `tests/` | 150 tests: unit, crawler and OCR, edition diffs, pgvector integration, API, MCP client, eval set vs. manual |
 | `DECISIONS.md` | Every design trade-off and the evidence behind it |
 | `docs/WALKTHROUGH.md` | How to learn this codebase well enough to defend it |
 
@@ -149,9 +155,7 @@ One Docker image plus Postgres with pgvector. Step-by-step for Render + Neon (fr
 
 - [ ] Run the eval with AI on and add the row above
 - [ ] RSOAC review of the draft eval cases (`"verified": true`), especially the inbox ones
-- [ ] OCR for the 213 scanned PDFs that have no text layer
 - [ ] Deploy (docs/DEPLOY.md) and link it here
-- [ ] "What changed?" between manual editions, from the crawl history
 
 ## Author
 

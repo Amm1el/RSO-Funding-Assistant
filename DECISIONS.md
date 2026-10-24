@@ -145,3 +145,26 @@ Contacts are pulled from published pages and documents, only for FSU office and 
 
 ### 37. Where the manual and the Statutes give different numbers, the chair decides which governs
 Statutes Ch. 812 caps RSOAC funding at 3.5% of RSOAC's annual budget; the manual says $5,776 per organization for 2026-27. Confirmed with the RSOAC chair: **$5,776 governs**. The two aren't in conflict (the dollar figure is this year's cap that the statute's rule sets), and the app shows both passages so a reader can see where the number comes from. The eval case is marked verified. Each future conflict like this goes the same way: a person with authority decides, and the eval records the decision.
+
+### 38. The no-AI answerer weights rare words, quotes up to three sentences, and still can't refuse well
+Most failing cases had the right passage at rank 1 and still missed the fact: the answerer picked the wrong sentences. Weighting question words by how rare they are among the candidate sentences (a local IDF), so "Venmo" counts more than "funds", and quoting up to three sentences took the Funding section from **37% to 49% pass**. A stricter refusal cutoff (share of the question's IDF the best sentence covers, 0.35-0.55) was swept and rejected: refusals went 11% → 33-89% but correct answers fell 99% → 41-79%. Word overlap can't tell an off-topic question from an on-topic one; that's the LLM's job.
+
+### 39. Two experiments that didn't ship
+- **Leave meeting records out of "All sources"** (they're 83% of chunks): retrieval hit 84% → 80%. Meeting packets often restate the rule being discussed, so they help more than they distract.
+- **Bigger or smaller chunks on the full corpus**: 100 words 48% / MRR 0.79, 220 words 47% / 0.76, 150 words 49% / 0.79 (Funding section). 150 stays.
+Both are recorded so nobody re-runs them blind.
+
+### 40. OCR for scanned PDFs, in the crawler
+213 linked PDFs had no text layer. The crawler now renders those pages (pdftoppm, 200 dpi) and reads them with Tesseract, one section per page so citations keep page numbers, capped at 25 pages a file. It runs in the crawl workflow, not the app, so the app never needs OCR tools.
+
+### 41. "What changed" comes free from dedupe
+Near-duplicate detection (#31) already pairs each document with its older edition. A sentence-level diff of each pair, after dropping running headers and page numbers, lists added and removed rules. It reproduces the 9/21/26 manual changes found by hand (#34) exactly. Only rulebooks are reported: balance sheets and letters also come in "editions" and their diffs are noise. Shown in the Directory and in each crawl's summary.
+
+### 42. Feedback that turns into eval cases, without collecting people
+"Was this right?" stores the question, the answer, yes/no, an optional note and the cited sections: no IP, account or browser details, and a 20-per-hour limit kept only in memory. `scripts/feedback-to-evals.ts` turns "no" answers into draft cases. Real wrong answers are the best source of new test cases.
+
+### 43. The phone build answers in under a second after load
+Profiling showed tokenizing 23,000 chunks (1.7 s) and the base64 decode (0.6 s) dominated, then embedding thousands of chunks that share a common word with the question. Fixes: memoize the tokenizer per word (2x), decode base64 natively, build the index in the background once the page is usable, and run vector search only over the top 400 keyword matches. First answer right after load: 5.4 s → 1.4 s; ~0.2 s once warm. Retrieval improved slightly too (hit 84% → 86%).
+
+### 44. Local embedding models get their task prefixes
+`nomic-embed-text` is trained with `search_query:` / `search_document:` prefixes and loses quality without them. `embed()` now knows whether it's embedding a question or a passage, and the Ollama embedder adds the prefixes for nomic models.
