@@ -142,3 +142,6 @@ Contacts are pulled from published pages and documents, only for FSU office and 
 
 ### 36. Local AI (Ollama) as a third answerer, and no fake API keys
 `USE_AI=true` picks Claude if a key is set, else a local model through Ollama (`LOCAL_MODEL`, JSON-schema output, same citation verification), else the extractive answerer. That gives a free, private AI mode for demos. Invented API keys aren't an option: they'd fail on the first request, and using someone else's would be worse.
+
+### 37. Where the manual and the Statutes give different numbers, the chair decides which governs
+Statutes Ch. 812 caps RSOAC funding at 3.5% of RSOAC's annual budget; the manual says $5,776 per organization for 2026-27. Confirmed with the RSOAC chair: **$5,776 governs**. The two aren't in conflict (the dollar figure is this year's cap that the statute's rule sets), and the app shows both passages so a reader can see where the number comes from. The eval case is marked verified. Each future conflict like this goes the same way: a person with authority decides, and the eval records the decision.
