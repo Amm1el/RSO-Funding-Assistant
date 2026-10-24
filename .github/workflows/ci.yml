@@ -38,6 +38,7 @@ jobs:
         run: npm run corpus:pull
       - run: npm run typecheck
       - run: npx playwright install chromium
+      - run: sudo apt-get update -q && sudo apt-get install -y -q tesseract-ocr poppler-utils
       - name: Tests (unit, pgvector integration, eval set vs. manual)
         run: npm test
         env:

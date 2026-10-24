@@ -2,11 +2,11 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { PoliteFetcher } from "./http.js";
 import { extractPage } from "./html.js";
-import { documentType, docxSections, pdfSections } from "./documents.js";
+import { documentType, docxSections, ocrAvailable, ocrPdfSections, pdfSections } from "./documents.js";
 import { crawlMunicode } from "./municode.js";
 import { crawlMeetings } from "./civicclerk.js";
 import { docId } from "./ids.js";
-import type { CorpusDoc } from "./types.js";
+import type { CorpusDoc, CorpusSection } from "./types.js";
 
 export type CrawlSource = "site" | "documents" | "code" | "meetings";
 
@@ -50,6 +50,9 @@ export async function crawl(opts: CrawlOptions) {
   const log = opts.log ?? console.log;
   const fetcher = new PoliteFetcher();
   const errors: string[] = [];
+  // Scanned PDFs get OCR when the tools are installed (the crawl workflow installs them).
+  const canOcr = ocrAvailable();
+  let ocrCount = 0;
   const pages: CorpusDoc[] = [];
   const documentLinks = new Map<string, { parent: string; text: string }>();
   const out: Partial<Record<CrawlSource, CorpusDoc[]>> = {};
@@ -166,7 +169,13 @@ export async function crawl(opts: CrawlOptions) {
         }
         const bytes = new Uint8Array(await res.arrayBuffer());
         const kind = documentType(url);
-        const parsed = kind === "pdf" ? await pdfSections(bytes) : kind === "docx" ? await docxSections(bytes) : null;
+        let parsed: { title?: string; sections: CorpusSection[] } | null = kind === "pdf" ? await pdfSections(bytes) : kind === "docx" ? await docxSections(bytes) : null;
+        let ocr = false;
+        if (kind === "pdf" && parsed && !parsed.sections.length && canOcr) {
+          parsed = await ocrPdfSections(bytes);
+          ocr = parsed.sections.length > 0;
+          if (ocr) ocrCount++;
+        }
         if (!parsed || !parsed.sections.length) {
           errors.push(`no text (scanned image?) ${url}`);
           continue;
@@ -181,7 +190,7 @@ export async function crawl(opts: CrawlOptions) {
           fetchedAt: new Date().toISOString(),
           parent,
           sections: parsed.sections,
-          meta: { file: fileName, bytes: bytes.byteLength },
+          meta: { file: fileName, bytes: bytes.byteLength, ...(ocr ? { ocr: true } : {}) },
         });
         if (docs.length % 50 === 0) log(`  ${docs.length} documents read`);
       } catch (err) {
@@ -212,7 +221,7 @@ export async function crawl(opts: CrawlOptions) {
       chars: docs!.reduce((s, d) => s + d.sections.reduce((t, x) => t + x.text.length, 0), 0),
     };
   }
-  const manifest = { crawledAt: new Date().toISOString(), counts, errors: errors.length, skippedByRobots: fetcher.skippedByRobots.length };
+  const manifest = { crawledAt: new Date().toISOString(), counts, errors: errors.length, ocr: ocrCount, skippedByRobots: fetcher.skippedByRobots.length };
   await writeFile(join(opts.outDir, "manifest.json"), JSON.stringify(manifest, null, 2) + "\n");
   await writeFile(
     join(opts.outDir, "crawl-report.md"),
