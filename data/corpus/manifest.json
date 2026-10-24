@@ -1,5 +1,5 @@
 {
-  "crawledAt": "2026-10-24T17:16:14.935Z",
+  "crawledAt": "2026-10-24T18:31:58.594Z",
   "counts": {
     "site": {
       "documents": 247,
@@ -12,9 +12,9 @@
       "chars": 1267777
     },
     "documents": {
-      "documents": 2768,
-      "sections": 10826,
-      "chars": 14823198
+      "documents": 2981,
+      "sections": 11851,
+      "chars": 15996407
     },
     "meetings": {
       "documents": 958,
@@ -22,7 +22,7 @@
       "chars": 3924725
     }
   },
-  "errors": 261,
-  "ocr": 0,
+  "errors": 48,
+  "ocr": 213,
   "skippedByRobots": 1
 }

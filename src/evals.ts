@@ -19,6 +19,12 @@ export const EvalCase = z.object({
   collection: z.string().optional(),
   /** Where the case came from, e.g. "manual" (drafted from the text) or "rsoac-inbox" (a real question, paraphrased). */
   origin: z.string().optional(),
+  /**
+   * The RSOAC chair's ruling when it differs from the published sources. The app can only
+   * cite what SGA publishes, so the case keeps testing the published text; this records the
+   * conflict so it's fixed at the source (the manual), not hidden in the test.
+   */
+  chair_note: z.string().optional(),
   /** True once a person who knows the rules (the RSOAC chair) has checked the case. */
   verified: z.boolean(),
 });

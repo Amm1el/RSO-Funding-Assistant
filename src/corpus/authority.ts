@@ -7,6 +7,14 @@ import type { CorpusDoc } from "../crawl/types.js";
  * past ones. Applied as a multiplier on the fused retrieval score.
  */
 export function sourceWeight(doc: CorpusDoc, now = new Date()): number {
+  // OCR'd scans are mostly old filings and minutes, and their text has recognition errors:
+  // keep them findable but behind sources with a real text layer.
+  return doc.meta?.ocr ? Math.round(baseWeight(doc, now) * OCR_FACTOR * 100) / 100 : baseWeight(doc, now);
+}
+
+const OCR_FACTOR = 0.6;
+
+function baseWeight(doc: CorpusDoc, now: Date): number {
   if (doc.kind === "code") return 1;
   if (doc.kind === "page") return doc.meta?.scope === "one-hop" ? 0.6 : 0.9;
   if (doc.kind === "meeting") {
