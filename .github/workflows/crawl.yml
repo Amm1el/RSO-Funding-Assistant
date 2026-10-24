@@ -1,0 +1,64 @@
+name: Crawl SGA sources
+
+# Collects every public SGA source the assistant answers from and publishes the extracted
+# text to the `corpus-data` branch: sga.fsu.edu and sai.fsu.edu, the documents they link to,
+# the municipal code books (Constitution, Statutes, COGS code...), and CivicClerk meetings.
+# Runs weekly so answers follow the sites, and on demand from the Actions tab.
+
+on:
+  workflow_dispatch:
+    inputs:
+      only:
+        description: "Sources to crawl (comma-separated): site, documents, code, meetings"
+        default: "site,documents,code,meetings"
+  schedule:
+    - cron: "17 9 * * 1" # Mondays, 5:17 AM Eastern
+
+permissions:
+  contents: write
+
+concurrency:
+  group: crawl
+  cancel-in-progress: false
+
+jobs:
+  crawl:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Crawl
+        run: npm run crawl -- --out corpus --only "${{ inputs.only || 'site,documents,code,meetings' }}"
+      - name: Show the report
+        if: always()
+        run: cat corpus/crawl-report.md >> "$GITHUB_STEP_SUMMARY" || true
+      - name: Publish to the corpus-data branch
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cd corpus
+          cat > README.md <<'MD'
+          # SGA corpus (generated)
+
+          Extracted text of every public source the RSO Funding Assistant answers from, written by
+          `.github/workflows/crawl.yml` on the main branch. Do not edit by hand; the next crawl replaces it.
+          See `manifest.json` for counts and `crawl-report.md` for errors and robots.txt skips.
+          MD
+          git init -q -b corpus-data
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -qm "Corpus crawled $(date -u +%Y-%m-%d)"
+          git push -f "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" corpus-data
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: corpus
+          path: corpus/
+          retention-days: 14

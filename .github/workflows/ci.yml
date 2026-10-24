@@ -33,6 +33,7 @@ jobs:
       - name: Download the 2026-27 manual
         run: curl -fsSL -o data/26-27SGAFM.pdf "$MANUAL_URL"
       - run: npm run typecheck
+      - run: npx playwright install chromium
       - name: Tests (unit, pgvector integration, eval set vs. manual)
         run: npm test
         env:
