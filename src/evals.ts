@@ -17,6 +17,8 @@ export const EvalCase = z.object({
   category: z.enum(["lookup", "number", "multi", "refuse"]).optional(),
   /** The app section a user would ask this in; the eval searches only that section unless --collection all. */
   collection: z.string().optional(),
+  /** Where the case came from, e.g. "manual" (drafted from the text) or "rsoac-inbox" (a real question, paraphrased). */
+  origin: z.string().optional(),
   /** True once a person who knows the rules (the RSOAC chair) has checked the case. */
   verified: z.boolean(),
 });
