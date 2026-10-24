@@ -93,3 +93,17 @@ CREATE TABLE IF NOT EXISTS chunk_terms (
   PRIMARY KEY (term, chunk_id)
 );
 CREATE INDEX IF NOT EXISTS chunk_terms_chunk ON chunk_terms (chunk_id);
+
+-- Feedback on answers ("Was this right?"). Only what's needed to turn a wrong answer into
+-- an eval case: no IP, account or browser data. Exported with scripts/feedback-to-evals.ts.
+CREATE TABLE IF NOT EXISTS feedback (
+  id          BIGSERIAL PRIMARY KEY,
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+  question    TEXT NOT NULL,
+  collection  TEXT,
+  answer      TEXT NOT NULL,
+  helpful     BOOLEAN NOT NULL,
+  note        TEXT,
+  generator   TEXT,
+  sections    TEXT[] NOT NULL DEFAULT '{}'
+);

@@ -44,6 +44,27 @@ describe("Ollama (local AI, no API key)", () => {
     expect(v[768]).toBe(0);
   });
 
+  it("adds nomic's task prefixes for questions and passages, and leaves other models alone", async () => {
+    const sent: string[][] = [];
+    vi.stubGlobal("fetch", async (_url: string, init: RequestInit) => {
+      const body = JSON.parse(String(init.body));
+      sent.push(body.input);
+      return new Response(JSON.stringify({ embeddings: body.input.map(() => [1, 0]) }));
+    });
+    await new OllamaEmbedder("nomic-embed-text").embed(["How much for hotels?"], "query");
+    await new OllamaEmbedder("nomic-embed-text").embed(["Lodging: $225 a night"], "document");
+    await new OllamaEmbedder("mxbai-embed-large").embed(["How much for hotels?"], "query");
+    expect(sent).toEqual([["search_query: How much for hotels?"], ["search_document: Lodging: $225 a night"], ["How much for hotels?"]]);
+  });
+
+  it("zero-padding keeps cosine similarity unchanged", async () => {
+    const a = [0.3, -0.2, 0.9], b = [0.1, 0.4, 0.8];
+    vi.stubGlobal("fetch", async (_url: string, init: RequestInit) => new Response(JSON.stringify({ embeddings: JSON.parse(String(init.body)).input.map((t: string) => (t === "a" ? a : b)) })));
+    const [pa, pb] = await new OllamaEmbedder("x").embed(["a", "b"]);
+    const cos = (x: number[], y: number[]) => x.reduce((s, v, i) => s + v * y[i], 0) / (Math.hypot(...x) * Math.hypot(...y));
+    expect(cos(pa, pb)).toBeCloseTo(cos(a, b), 12);
+  });
+
   it("is used when USE_AI is on with a local model and no API key", async () => {
     vi.resetModules();
     vi.stubEnv("USE_AI", "true");

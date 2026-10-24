@@ -1,5 +1,6 @@
 import type { CorpusDoc } from "../crawl/types.js";
 import { classify, type CollectionId } from "./collections.js";
+import { editionChanges, type EditionChange } from "./editions.js";
 
 /** One office, position or person with a way to reach them. */
 export interface Contact {
@@ -35,6 +36,8 @@ export interface Directory {
   contacts: Contact[];
   places: Place[];
   upcoming: UpcomingMeeting[];
+  /** Rule changes between editions of the same document (e.g. the manual's 9/21/26 update). */
+  changes: EditionChange[];
   builtAt: string;
 }
 
@@ -217,5 +220,11 @@ export function extractUpcoming(docs: CorpusDoc[], now = new Date()): UpcomingMe
 }
 
 export function buildDirectory(docs: CorpusDoc[]): Directory {
-  return { contacts: extractContacts(docs), places: extractPlaces(docs), upcoming: extractUpcoming(docs), builtAt: new Date().toISOString() };
+  return {
+    contacts: extractContacts(docs),
+    places: extractPlaces(docs),
+    upcoming: extractUpcoming(docs),
+    changes: editionChanges(docs.filter((d) => d.kind === "document")),
+    builtAt: new Date().toISOString(),
+  };
 }

@@ -41,6 +41,9 @@ jobs:
       - name: Show the report
         if: always()
         run: cat corpus/crawl-report.md >> "$GITHUB_STEP_SUMMARY" || true
+      - name: What changed between editions
+        if: success()
+        run: npx tsx scripts/edition-changes.ts --dir corpus >> "$GITHUB_STEP_SUMMARY" || true
       - name: Refuse to publish a crawl that shrank by half
         run: |
           git fetch --depth 1 origin corpus-data && git show origin/corpus-data:manifest.json > previous-manifest.json || true

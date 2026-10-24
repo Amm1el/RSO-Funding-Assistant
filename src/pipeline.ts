@@ -40,7 +40,7 @@ export async function retrieve(
   opts: AskOptions = {},
 ): Promise<RetrievedChunk[]> {
   const scope = { embedder: deps.embedder.name, collection: opts.collection ?? null };
-  const [embedding] = await deps.embedder.embed([question]);
+  const [embedding] = await deps.embedder.embed([question], "query");
   const byVector = await searchChunks(deps.pool, scope, embedding, CANDIDATES);
   if (!byVector.length || byVector[0].similarity < deps.embedder.minSimilarity) return [];
   if (mode === "vector") return byVector.slice(0, k);

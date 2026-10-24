@@ -13,7 +13,11 @@ export interface Embedder {
    * is refused. Each model has its own similarity scale, so the cutoff belongs to the model.
    */
   readonly minSimilarity: number;
-  embed(texts: string[]): Promise<number[][]>;
+  /**
+   * `role` says whether the texts are questions or stored passages. Most models ignore it;
+   * some (nomic-embed-text) are trained with a different prefix for each and lose quality without.
+   */
+  embed(texts: string[], role?: "query" | "document"): Promise<number[][]>;
 }
 
 /** OpenAI embeddings, sent in batches to stay under request limits. */

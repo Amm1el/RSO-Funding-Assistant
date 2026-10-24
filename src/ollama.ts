@@ -74,7 +74,10 @@ export class OllamaEmbedder implements Embedder {
     this.name = `ollama:${model}`;
   }
 
-  async embed(texts: string[]): Promise<number[][]> {
+  async embed(texts: string[], role?: "query" | "document"): Promise<number[][]> {
+    // nomic-embed-text is trained with task prefixes; without them retrieval quality drops.
+    const prefix = this.model.startsWith("nomic-embed") && role ? (role === "query" ? "search_query: " : "search_document: ") : "";
+    if (prefix) texts = texts.map((t) => prefix + t);
     const out: number[][] = [];
     for (let i = 0; i < texts.length; i += 64) {
       const { embeddings } = await ollama<{ embeddings: number[][] }>("/api/embed", { model: this.model, input: texts.slice(i, i + 64) });

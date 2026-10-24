@@ -70,10 +70,19 @@ export interface UpcomingMeeting {
   url: string;
 }
 
+export interface EditionChange {
+  title: string;
+  newUrl: string;
+  oldUrl: string;
+  added: string[];
+  removed: string[];
+}
+
 export interface Directory {
   contacts: Contact[];
   places: Place[];
   upcoming?: UpcomingMeeting[];
+  changes?: EditionChange[];
   builtAt: string | null;
 }
 
@@ -108,6 +117,22 @@ export async function askQuestion(question: string, collection: string | null, s
   const body = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(body.error ?? `The server returned an error (${res.status}). Ask again in a moment.`);
   return body as AskResponse;
+}
+
+/** The phone build has no server, so it can't collect feedback. */
+export const FEEDBACK_ENABLED = !STATIC;
+
+export async function sendFeedback(body: {
+  question: string;
+  collection: string | null;
+  answer: string;
+  helpful: boolean;
+  note?: string;
+  generator: string;
+  sections: string[];
+}): Promise<void> {
+  const res = await fetch("/api/feedback", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error ?? "Could not send feedback.");
 }
 
 export async function fetchHealth(): Promise<Health> {

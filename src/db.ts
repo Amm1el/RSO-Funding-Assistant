@@ -256,3 +256,30 @@ export async function getMeta<T>(pool: DbPool, key: string): Promise<T | null> {
   // node-postgres parses jsonb; PGlite may hand back a string.
   return typeof rows[0].value === "string" ? (JSON.parse(rows[0].value) as T) : rows[0].value;
 }
+
+export interface FeedbackInput {
+  question: string;
+  collection?: string | null;
+  answer: string;
+  helpful: boolean;
+  note?: string | null;
+  generator?: string | null;
+  /** Section labels of the cited passages, to see where wrong answers came from. */
+  sections: string[];
+}
+
+export async function saveFeedback(pool: DbPool, f: FeedbackInput): Promise<void> {
+  await pool.query(
+    `INSERT INTO feedback (question, collection, answer, helpful, note, generator, sections) VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+    [f.question, f.collection ?? null, f.answer, f.helpful, f.note ?? null, f.generator ?? null, f.sections],
+  );
+}
+
+export async function listFeedback(pool: DbPool, opts: { helpful?: boolean } = {}): Promise<(FeedbackInput & { id: number; createdAt: string })[]> {
+  const { rows } = await pool.query(
+    `SELECT id, created_at, question, collection, answer, helpful, note, generator, sections FROM feedback
+      WHERE ($1::boolean IS NULL OR helpful = $1) ORDER BY created_at`,
+    [opts.helpful ?? null],
+  );
+  return rows.map((r) => ({ ...r, id: Number(r.id), createdAt: new Date(r.created_at).toISOString() }));
+}

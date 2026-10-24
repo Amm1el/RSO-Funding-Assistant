@@ -5,7 +5,7 @@ import { DEFAULT_CORPUS_DIR, loadCorpus, manualAsDoc } from "../corpus/load.js";
 import { ingestCorpus } from "../corpus/ingest.js";
 
 /*
-Usage: npm run ingest:corpus [-- --dir data/corpus] [--offline]
+Usage: npm run ingest:corpus [-- --dir data/corpus] [--offline] [--max-words 150 --overlap-words 30]
 Ingests the crawled corpus (npm run corpus:pull). Without one, falls back to the local
 Financial Manual PDF so the app still works.
 */
@@ -22,5 +22,6 @@ if (!docs.length) {
 }
 const pool = createPool();
 await migrate(pool);
-await ingestCorpus(pool, docs, embedder);
+const num = (name: string) => (args.includes(name) ? Number(args[args.indexOf(name) + 1]) : undefined);
+await ingestCorpus(pool, docs, embedder, console.log, { maxWords: num("--max-words"), overlapWords: num("--overlap-words") });
 await pool.end();

@@ -18,11 +18,23 @@ export function stem(word: string): string {
   return word;
 }
 
+/** raw word -> its term, or null for stop words. The vocabulary is small next to the text. */
+const memo = new Map<string, string | null>();
+
 /** Lowercased, stemmed content words, without stop words. */
 export function terms(text: string): string[] {
-  return (text.toLowerCase().match(/[a-z0-9$%,.]+/g) ?? [])
-    .map((w) => w.replace(/[.,]+$/, ""))
-    .filter((w) => w && !STOP.has(w))
-    .map(stem);
+  const out: string[] = [];
+  const re = /[a-z0-9$%,.]+/g;
+  const lower = text.toLowerCase();
+  for (let m = re.exec(lower); m; m = re.exec(lower)) {
+    let term = memo.get(m[0]);
+    if (term === undefined) {
+      const w = m[0].replace(/[.,]+$/, "");
+      term = !w || STOP.has(w) ? null : stem(w);
+      if (memo.size < 500_000) memo.set(m[0], term);
+    }
+    if (term !== null) out.push(term);
+  }
+  return out;
 }
 

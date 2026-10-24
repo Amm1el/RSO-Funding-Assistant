@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
 import {
   askQuestion,
+  FEEDBACK_ENABLED,
   fetchCollections,
   fetchDirectory,
   fetchHealth,
   pageLabel,
+  sendFeedback,
   type AskResponse,
   type Collection,
   type Directory,
@@ -81,11 +83,22 @@ export function App() {
     { id: "directory", label: "Directory" },
   ];
 
+  // Arrow keys move between tabs, as screen-reader and keyboard users expect of a tablist.
+  const onTabKey = (e: KeyboardEvent) => {
+    const i = tabs.findIndex((t) => t.id === tab);
+    const next = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: tabs.length - 1 }[e.key];
+    if (next === undefined) return;
+    e.preventDefault();
+    const t = tabs[(next + tabs.length) % tabs.length];
+    setTab(t.id);
+    document.getElementById(`tab-${t.id}`)?.focus();
+  };
+
   return (
     <>
-      <div className="utility">
+      <aside className="utility" aria-label="About this tool">
         <div className="wrap">Unofficial student-built tool for FSU students and student organizations</div>
-      </div>
+      </aside>
       <header className="masthead">
         <div className="wrap">
           <p className="kicker">Florida State University Student Government, 2026–27</p>
@@ -99,9 +112,19 @@ export function App() {
 
       <nav className="sections" aria-label="Sections">
         <div className="wrap">
-          <div className="tabs" role="tablist">
+          <div className="tabs" role="tablist" aria-label="Sections" onKeyDown={onTabKey}>
             {tabs.map((t) => (
-              <button key={t.id} role="tab" type="button" aria-selected={tab === t.id} className={tab === t.id ? "tab active" : "tab"} onClick={() => setTab(t.id)}>
+              <button
+                key={t.id}
+                id={`tab-${t.id}`}
+                role="tab"
+                type="button"
+                aria-selected={tab === t.id}
+                aria-controls="tab-panel"
+                tabIndex={tab === t.id ? 0 : -1}
+                className={tab === t.id ? "tab active" : "tab"}
+                onClick={() => setTab(t.id)}
+              >
                 {t.label}
               </button>
             ))}
@@ -112,15 +135,18 @@ export function App() {
       <main className="wrap">
         <ModeBanner health={health} />
 
+        <div role="tabpanel" id="tab-panel" aria-labelledby={`tab-${tab}`}>
         {tab === "directory" ? (
           <DirectoryView labels={labels} />
         ) : (
           <>
-            {current && (
+            {current ? (
               <section className="section-intro">
                 <h2>{current.label}</h2>
                 <p>{current.blurb}</p>
               </section>
+            ) : (
+              <h2 className="visually-hidden">All sources</h2>
             )}
 
             {shown.length === 0 && (
@@ -173,6 +199,7 @@ export function App() {
             </form>
           </>
         )}
+        </div>
       </main>
 
       <footer className="site-footer">
@@ -215,11 +242,63 @@ function ExchangeView({ exchange, labels, showSection }: { exchange: Exchange; l
 
   return (
     <li className="exchange" ref={ref}>
-      <p className="question">{exchange.question}</p>
+      <h3 className="question">{exchange.question}</h3>
       {exchange.status === "asking" && <p className="pending">Searching…</p>}
       {exchange.status === "error" && <p className="error">{exchange.error}</p>}
       {exchange.response && <AnswerView response={exchange.response} labels={labels} showSection={showSection} />}
+      {exchange.response && FEEDBACK_ENABLED && <FeedbackForm exchange={exchange} />}
     </li>
+  );
+}
+
+/** "Was this right?" Wrong answers become draft eval cases for the RSOAC chair to review. */
+function FeedbackForm({ exchange }: { exchange: Exchange }) {
+  const [state, setState] = useState<"ask" | "explain" | "sending" | "sent" | "error">("ask");
+  const [note, setNote] = useState("");
+  const response = exchange.response!;
+  const send = async (helpful: boolean) => {
+    setState("sending");
+    try {
+      await sendFeedback({
+        question: exchange.question,
+        collection: exchange.collection,
+        answer: response.answer,
+        helpful,
+        note: note.trim() || undefined,
+        generator: response.generator,
+        sections: response.citations.map((c) => c.section),
+      });
+      setState("sent");
+    } catch {
+      setState("error");
+    }
+  };
+  if (state === "sent") return <p className="feedback-done" role="status">Thanks. This helps make the answers better.</p>;
+  if (state === "error") return <p className="feedback-done" role="status">Couldn't send feedback right now.</p>;
+  if (state === "explain")
+    return (
+      <form
+        className="feedback"
+        onSubmit={(e) => {
+          e.preventDefault();
+          void send(false);
+        }}
+      >
+        <label htmlFor={`fb-${exchange.id}`}>What was wrong or missing? (optional, don't include personal details)</label>
+        <textarea id={`fb-${exchange.id}`} rows={2} maxLength={1000} value={note} onChange={(e) => setNote(e.target.value)} />
+        <button type="submit">Send</button>
+      </form>
+    );
+  return (
+    <div className="feedback" role="group" aria-label="Was this answer right?">
+      <span>Was this right?</span>
+      <button type="button" disabled={state === "sending"} onClick={() => void send(true)}>
+        Yes
+      </button>
+      <button type="button" disabled={state === "sending"} onClick={() => setState("explain")}>
+        No
+      </button>
+    </div>
   );
 }
 
@@ -239,7 +318,7 @@ function AnswerView({ response, labels, showSection }: { response: AskResponse; 
 
       {cited.length > 0 && (
         <section className="sources" aria-label="Where this comes from">
-          <h3>Where this comes from</h3>
+          <h4>Where this comes from</h4>
           {cited.map((p) => (
             <PassageView key={p.id} passage={p} quotes={quotesFor(p)} label={showSection && p.collection ? labels[p.collection] : undefined} />
           ))}
@@ -338,6 +417,36 @@ function DirectoryView({ labels }: { labels: Record<string, string> }) {
               </li>
             ))}
           </ul>
+        </section>
+      )}
+
+      {(directory.changes ?? []).length > 0 && !f && (
+        <section className="dir-block" aria-labelledby="changes-heading">
+          <h3 id="changes-heading">Recent rule changes</h3>
+          <p className="dir-note">Found by comparing each document with its previous edition. Check the new edition before relying on older advice.</p>
+          {directory.changes!.map((c) => (
+            <details key={c.newUrl} className="changes">
+              <summary>
+                {c.title} <span className="dir-detail">({c.added.length} added, {c.removed.length} removed)</span>
+              </summary>
+              <ul>
+                {c.added.map((x) => (
+                  <li key={"a" + x}>
+                    <ins>Added</ins> {x}
+                  </li>
+                ))}
+                {c.removed.map((x) => (
+                  <li key={"r" + x}>
+                    <del>Removed</del> {x}
+                  </li>
+                ))}
+              </ul>
+              <p className="dir-source">
+                <a href={c.newUrl} target="_blank" rel="noopener noreferrer">New edition</a> ·{" "}
+                <a href={c.oldUrl} target="_blank" rel="noopener noreferrer">Previous edition</a>
+              </p>
+            </details>
+          ))}
         </section>
       )}
 

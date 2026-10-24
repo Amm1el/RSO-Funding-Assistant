@@ -7,13 +7,40 @@ import { createPool } from "./db.js";
 import { ask, type Deps } from "./pipeline.js";
 import { createDeps } from "./runtime.js";
 import { COLLECTIONS, COLLECTION_IDS } from "./corpus/collections.js";
-import { getMeta, type CorpusInfo } from "./db.js";
+import { getMeta, saveFeedback, type CorpusInfo } from "./db.js";
 import type { Directory } from "./corpus/directory.js";
 
 const AskBody = z.object({
   question: z.string().trim().min(3).max(500),
   collection: z.enum(COLLECTION_IDS as unknown as [string, ...string[]]).nullish(),
 });
+
+const FeedbackBody = z.object({
+  question: z.string().trim().min(3).max(500),
+  collection: z.enum(COLLECTION_IDS as unknown as [string, ...string[]]).nullish(),
+  answer: z.string().max(4000),
+  helpful: z.boolean(),
+  note: z.string().trim().max(1000).nullish(),
+  generator: z.string().max(100).nullish(),
+  sections: z.array(z.string().max(200)).max(10).default([]),
+});
+
+/**
+ * At most 20 feedback posts per client per hour, counted in memory only; the address is
+ * never written anywhere. Enough to stop a script filling the table.
+ */
+function feedbackLimiter(max = 20, windowMs = 3600_000) {
+  const hits = new Map<string, number[]>();
+  return (key: string) => {
+    const now = Date.now();
+    const recent = (hits.get(key) ?? []).filter((t) => now - t < windowMs);
+    if (recent.length >= max) return false;
+    recent.push(now);
+    hits.set(key, recent);
+    if (hits.size > 10_000) hits.clear();
+    return true;
+  };
+}
 
 /** The built React app (npm run build). */
 const WEB_DIST = fileURLToPath(new URL("../web/dist", import.meta.url));
@@ -65,6 +92,27 @@ export function createApp(deps: Deps & { corpus?: CorpusInfo }) {
     }
   });
 
+  /** "Was this right?" on an answer. Wrong answers become draft eval cases (scripts/feedback-to-evals.ts). */
+  const allowFeedback = feedbackLimiter();
+  app.post("/api/feedback", async (req, res) => {
+    const parsed = FeedbackBody.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: "Invalid feedback." });
+      return;
+    }
+    if (!allowFeedback(req.ip ?? "unknown")) {
+      res.status(429).json({ error: "Thanks, that's plenty of feedback for now." });
+      return;
+    }
+    try {
+      await saveFeedback(deps.pool, parsed.data);
+      res.status(204).end();
+    } catch (err) {
+      console.error(err);
+      res.status(502).json({ error: "Could not save feedback." });
+    }
+  });
+
   return app;
 }
 
@@ -72,7 +120,7 @@ export function createApp(deps: Deps & { corpus?: CorpusInfo }) {
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const deps = await createDeps(createPool());
   createApp(deps).listen(config.PORT, () => {
-    console.log(`RSO Funding Assistant on http://localhost:${config.PORT}`);
+    console.log(`FSU SGA Assistant on http://localhost:${config.PORT}`);
     console.log(`  ${deps.corpus.documents} sources, ${deps.corpus.chunks} chunks, ${deps.embedder.name} retrieval, ${deps.generator.name} answers`);
     if (!config.USE_AI) console.log("  USE_AI is off: no API calls. Set USE_AI=true (and re-ingest for OpenAI embeddings) to turn AI on.");
     else if (deps.embedder.name.startsWith("hash:") && config.OPENAI_API_KEY)
