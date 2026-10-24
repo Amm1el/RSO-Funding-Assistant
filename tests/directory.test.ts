@@ -10,7 +10,8 @@ describe("directory: contacts", () => {
   const docs = [
     page("https://sga.fsu.edu/accounting", "Contact Information & Compliance", "SGA Accounting Office\nLocation: Student Union 3268\nPhone: (850) 644-7574\nEmail: sgaaccounting@fsu.edu"),
     page("https://sga.fsu.edu/funding", "Funding Options", "RSOs may contact the Student Body Treasurer at SGA-SBT@fsu.edu with any questions."),
-    page("https://sga.fsu.edu/staff", "Staff", "Director of Student Government | jdoe@fsu.edu | 850.644.1811 | Oglesby Student Union 4200"),
+    page("https://sga.fsu.edu/staff", "Staff", "Director of Student Government | sga-director@fsu.edu | 850.644.1811 | Oglesby Student Union 4200"),
+    page("https://sga.fsu.edu/council", "Officers", "Treasurer Jane Doe | jd23x@my.fsu.edu\nPresident John Roe | jr22@fsu.edu"),
   ];
   const contacts = extractContacts(docs);
   const by = (email: string) => contacts.find((c) => c.email === email);
@@ -19,14 +20,21 @@ describe("directory: contacts", () => {
     expect(by("sgaaccounting@fsu.edu")).toMatchObject({ name: "SGA Accounting Office", phone: "(850) 644-7574", location: "Student Union 3268", collection: "funding" });
   });
   it("names a contact by the text in front of the email on the same line", () => {
-    expect(by("sga-sbt@fsu.edu")?.name).toBe("RSOs may contact the Student Body Treasurer at");
+    expect(by("sga-sbt@fsu.edu")?.name).toBe("Student Body Treasurer");
   });
   it("splits table-like rows and normalizes phone formats", () => {
-    expect(by("jdoe@fsu.edu")).toMatchObject({ name: "Director of Student Government", phone: "(850) 644-1811", location: "Oglesby Student Union 4200" });
+    expect(by("sga-director@fsu.edu")).toMatchObject({ name: "Director of Student Government", phone: "(850) 644-1811", location: "Oglesby Student Union 4200" });
   });
   it("keeps one entry per email and links its source", () => {
     expect(contacts).toHaveLength(3);
+  });
+  it("leaves out students' personal accounts: the directory lists offices, not people", () => {
+    expect(by("jd23x@my.fsu.edu")).toBeUndefined();
+    expect(by("jr22@fsu.edu")).toBeUndefined();
+  });
+  it("labels well-known inboxes by role, which doesn't go stale when officers change", () => {
     expect(by("sgaaccounting@fsu.edu")?.source.url).toBe("https://sga.fsu.edu/accounting");
+    expect(extractContacts([page("https://sga.fsu.edu/x", "Exec", "Student Body Treasurer • Some Name | sga-sbt@fsu.edu")])[0].name).toBe("Student Body Treasurer");
   });
 });
 
