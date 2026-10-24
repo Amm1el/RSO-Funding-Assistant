@@ -1,38 +1,38 @@
-# Crawl report (2026-10-24T15:12:48.206Z)
+# Crawl report (2026-10-24T17:16:14.935Z)
 
 | Source | Documents | Sections | Characters |
 |---|---|---|---|
 | site | 247 | 1137 | 468,075 |
 | code | 26 | 397 | 1,267,777 |
-| documents | 2768 | 10831 | 14,857,306 |
-| meetings | 959 | 1279 | 3,924,845 |
+| documents | 2768 | 10826 | 14,823,198 |
+| meetings | 958 | 1278 | 3,924,725 |
 
 ## Skipped by robots.txt (1)
 - https://apps.its.fsu.edu/SGAVoting/app/votelist/
 
 ## Errors (261)
-- 403 https://sai.fsu.edu/sitemap
-- fetch failed https://nolecentral.dsa.fsu.edu/
-- fetch failed https://powerofwe.fsu.edu/
 - 403 https://sga.fsu.edu/sitemap
-- 403 https://foundation.fsu.edu/more-ways-give/senior-class-gift
+- 403 https://sai.fsu.edu/sitemap
 - 404 https://sga.fsu.edu/student-government/class-councils
+- fetch failed https://powerofwe.fsu.edu/
+- fetch failed https://nolecentral.dsa.fsu.edu/
 - 403 https://sga.fsu.edu/institutes/diversity-and-inclusion-institute
+- 403 https://foundation.fsu.edu/more-ways-give/senior-class-gift
 - 403 https://transportation.fsu.edu/contact
 - 404 https://obs.fsu.edu/about-us/advisory-councils
-- 404 https://www.facilities.fsu.edu/depts/designConstr/majorProjectFunding.php
 - 403 https://spark.fsu.edu/Project/1920/TOMProject
+- 404 https://www.facilities.fsu.edu/depts/designConstr/majorProjectFunding.php
 - 404 https://www.lib.fsu.edu/tutoring/about
 - 404 https://undergrad1.its.fsu.edu/advising_first/advisors-display.php
-- 404 https://psy.fsu.edu/php/about/communityservice/psychologyclinic/psychologyclinic.php
 - fetch failed https://wvfs.fsu.edu/
+- 404 https://psy.fsu.edu/php/about/communityservice/psychologyclinic/psychologyclinic.php
 - 404 https://union.fsu.edu/sac/involvement/get-recognition
 - 403 https://sga.fsu.edu/student-government/legislative-branch/resource-travel-allocation-committee
+- 404 https://sga.fsu.edu/node/31
+- fetch failed https://www.childcare.fsu.edu/
 - 403 https://spark.fsu.edu/Project/341/Bobby-E%20-Leach-Scholarship
 - 404 https://veterans.fsu.edu/veterans-alliance/cva/
-- 404 https://sga.fsu.edu/node/31
 - 404 https://sai.fsu.edu/%3Ca%20href%3D
-- fetch failed https://www.childcare.fsu.edu/
 - fetch failed https://studentgroups.fsu.edu/organization/thankasoldierorganizationoffsu
 - fetch failed https://www.victimadvocate.fsu.edu/
 - 404 https://sga.fsu.edu/financial
@@ -42,43 +42,43 @@
 - fetch failed https://nolecentral.dsa.fsu.edu/organization/nami
 - 404 https://sga.fsu.edu/pride/PDF/pride-eboard-supplemental.pdf
 - 404 https://sga.fsu.edu/wsu/PDF/Supplemental_Application_Modified.pdf
-- no text (scanned image?) https://sga.fsu.edu/sites/default/files/PDFs/Student%20Government/Elections/2025/FES/F%20NOI%20FES%20FY25.pdf
-- no text (scanned image?) https://sga.fsu.edu/sites/default/files/PDFs/Student%20Government/Elections/2025/FES/INDEP%20NOI%20FES%20FY2025.pdf
-- no text (scanned image?) https://sga.fsu.edu/sites/default/files/PDFs/Student%20Government/Elections/2025/FES/MADELINE%20OLIVA%20NOI%20FES%20FY25.pdf
-- no text (scanned image?) https://sga.fsu.edu/sites/default/files/PDFs/Student%20Government/Elections/2025/FES/RODRIGUEZ%20FY%20NOI%20FES%20FY25.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://sga.fsu.edu/sites/default/files/PDFs/Student%20Government/Elections/2025/FES/F%20NOI%20FES%20FY25.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://sga.fsu.edu/sites/default/files/PDFs/Student%20Government/Elections/2025/FES/INDEP%20NOI%20FES%20FY2025.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://sga.fsu.edu/sites/default/files/PDFs/Student%20Government/Elections/2025/FES/MADELINE%20OLIVA%20NOI%20FES%20FY25.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://sga.fsu.edu/sites/default/files/PDFs/Student%20Government/Elections/2025/FES/RODRIGUEZ%20FY%20NOI%20FES%20FY25.pdf
 - skipped (too large, 53248421 bytes) https://sga.fsu.edu/sites/g/files/upcbnu4151/files/PDFs/Student%20Government/Elections/2023/FWD-Final-Expense-Statement-Spring-2023.pdf
 - skipped (too large, 60583382 bytes) https://sga.fsu.edu/sites/g/files/upcbnu4151/files/PDFs/Student%20Government/Elections/2023/Surge_2023_Final.pdf
 - skipped (too large, 41291258 bytes) https://sga.fsu.edu/sites/g/files/upcbnu4151/files/PDFs/Student%20Government/Elections/2022/Surge_Fall_2022_Final_Expense_Report.pdf
-- no text (scanned image?) https://sga.fsu.edu/sites/g/files/upcbnu4151/files/PDFs/Student%20Government/Elections/2020/BSU-Final-Expense-Statement-2020.pdf
-- no text (scanned image?) https://sga.fsu.edu/sites/g/files/upcbnu4151/files/PDFs/Accounting/SGA%20Budgets/10.09.19-bill2020.pdf
-- no text (scanned image?) https://sga.fsu.edu/sites/g/files/upcbnu4151/files/PDFs/Accounting/SGA%20Budgets/BILL-2017-Proviso-and-Budget.pdf
-- no text (scanned image?) https://sga.fsu.edu/sites/g/files/upcbnu4151/files/PDFs/Student%20Government/COGS/Budget/Cogs-budget-19-20.pdf
-- no text (scanned image?) https://sga.fsu.edu/sites/g/files/upcbnu4151/files/PDFs/Student%20Government/COGS/Budget/Final_Budget_Bill21_2018_2019_Fiscal_Year.pdf
-- no text (scanned image?) https://sga.fsu.edu/sites/g/files/upcbnu4151/files/PDFs/Accounting/Sweepings%20Budgets/Sweepings-2019.pdf
-- no text (scanned image?) https://sga.fsu.edu/sites/g/files/upcbnu4151/files/PDFs/Accounting/Sweepings%20Budgets/12.06.17-bill04.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://sga.fsu.edu/sites/g/files/upcbnu4151/files/PDFs/Student%20Government/Elections/2020/BSU-Final-Expense-Statement-2020.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://sga.fsu.edu/sites/g/files/upcbnu4151/files/PDFs/Accounting/SGA%20Budgets/10.09.19-bill2020.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://sga.fsu.edu/sites/g/files/upcbnu4151/files/PDFs/Accounting/SGA%20Budgets/BILL-2017-Proviso-and-Budget.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://sga.fsu.edu/sites/g/files/upcbnu4151/files/PDFs/Student%20Government/COGS/Budget/Cogs-budget-19-20.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://sga.fsu.edu/sites/g/files/upcbnu4151/files/PDFs/Student%20Government/COGS/Budget/Final_Budget_Bill21_2018_2019_Fiscal_Year.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://sga.fsu.edu/sites/g/files/upcbnu4151/files/PDFs/Accounting/Sweepings%20Budgets/Sweepings-2019.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://sga.fsu.edu/sites/g/files/upcbnu4151/files/PDFs/Accounting/Sweepings%20Budgets/12.06.17-bill04.pdf
 - 404 https://sga.fsu.edu/sites/g/files/upcbnu4151/files/PDFs/Student%20Government/Resources/statutes.pdf
 - 404 https://sga.fsu.edu/sites/g/files/upcbnu4151/files/PDFs/Student%20Government/Resources/sga_financial_manual_22_23.pdf
 - 404 https://sga.fsu.edu/funding-policies/SGA-PAC-Funding-Policies.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://sga.fsu.edu/sites/g/files/upcbnu4151/files/PDFs/Student%20Government/Executive%20Branch/oga/legislative%20agenda/10.23.19-resolution85.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://sga.fsu.edu/sites/g/files/upcbnu4151/files/PDFs/Student%20Government/Executive%20Branch/oga/legislative%20agenda/OGALegislativeAgendaSpring2016.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://sga.fsu.edu/sites/g/files/upcbnu4151/files/PDFs/Student%20Government/Executive%20Branch/oga/legislative%20agenda/OGALegislativeAgendaSpring2015.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://sga.fsu.edu/sites/g/files/upcbnu4151/files/PDFs/Student%20Government/Executive%20Branch/oga/legislative%20agenda/OGALegislativeAgendaSpring2014.pdf
 - 404 https://sga.fsu.edu/hlsu/2021/HLSU-2021-2022-Voting-Deliberations.pdf
-- no text (scanned image?) https://sga.fsu.edu/sites/g/files/upcbnu4151/files/PDFs/Student%20Government/Executive%20Branch/oga/legislative%20agenda/10.23.19-resolution85.pdf
-- no text (scanned image?) https://sga.fsu.edu/sites/g/files/upcbnu4151/files/PDFs/Student%20Government/Executive%20Branch/oga/legislative%20agenda/OGALegislativeAgendaSpring2016.pdf
-- no text (scanned image?) https://sga.fsu.edu/sites/g/files/upcbnu4151/files/PDFs/Student%20Government/Executive%20Branch/oga/legislative%20agenda/OGALegislativeAgendaSpring2015.pdf
-- no text (scanned image?) https://sga.fsu.edu/sites/g/files/upcbnu4151/files/PDFs/Student%20Government/Executive%20Branch/oga/legislative%20agenda/OGALegislativeAgendaSpring2014.pdf
-- no text (scanned image?) https://sga.fsu.edu/sites/g/files/upcbnu4151/files/PDFs/Student%20Government/Legislative%20Branch/PAC/PAC%20Minutes/10-29-18-cr.pdf
-- no text (scanned image?) https://sga.fsu.edu/sites/g/files/upcbnu4151/files/PDFs/Student%20Government/Legislative%20Branch/PAC/PAC%20Minutes/2-19-18-minutes.pdf
-- no text (scanned image?) https://sga.fsu.edu/sites/g/files/upcbnu4151/files/PDFs/Student%20Government/Legislative%20Branch/PAC/PAC%20Minutes/4-02-18-cr.pdf
-- no text (scanned image?) https://sga.fsu.edu/sites/g/files/upcbnu4151/files/PDFs/Student%20Government/Legislative%20Branch/PAC/PAC%20Minutes/1-29-18-minutes.pdf
-- no text (scanned image?) https://sga.fsu.edu/sites/g/files/upcbnu4151/files/PDFs/Student%20Government/Legislative%20Branch/PAC/PAC%20Minutes/2-19-18-cr.pdf
-- no text (scanned image?) https://sga.fsu.edu/sites/g/files/upcbnu4151/files/PDFs/Student%20Government/Legislative%20Branch/PAC/PAC%20Minutes/2-12-18-cr.pdf
-- no text (scanned image?) https://sga.fsu.edu/sites/g/files/upcbnu4151/files/PDFs/Student%20Government/Legislative%20Branch/PAC/PAC%20Minutes/1-19-18-cr.pdf
-- no text (scanned image?) https://sga.fsu.edu/sites/g/files/upcbnu4151/files/PDFs/Student%20Government/Legislative%20Branch/PAC/PAC%20Minutes/1-17-18-cr.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://sga.fsu.edu/sites/g/files/upcbnu4151/files/PDFs/Student%20Government/Legislative%20Branch/PAC/PAC%20Minutes/10-29-18-cr.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://sga.fsu.edu/sites/g/files/upcbnu4151/files/PDFs/Student%20Government/Legislative%20Branch/PAC/PAC%20Minutes/2-19-18-minutes.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://sga.fsu.edu/sites/g/files/upcbnu4151/files/PDFs/Student%20Government/Legislative%20Branch/PAC/PAC%20Minutes/4-02-18-cr.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://sga.fsu.edu/sites/g/files/upcbnu4151/files/PDFs/Student%20Government/Legislative%20Branch/PAC/PAC%20Minutes/1-29-18-minutes.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://sga.fsu.edu/sites/g/files/upcbnu4151/files/PDFs/Student%20Government/Legislative%20Branch/PAC/PAC%20Minutes/2-19-18-cr.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://sga.fsu.edu/sites/g/files/upcbnu4151/files/PDFs/Student%20Government/Legislative%20Branch/PAC/PAC%20Minutes/2-12-18-cr.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://sga.fsu.edu/sites/g/files/upcbnu4151/files/PDFs/Student%20Government/Legislative%20Branch/PAC/PAC%20Minutes/1-19-18-cr.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://sga.fsu.edu/sites/g/files/upcbnu4151/files/PDFs/Student%20Government/Legislative%20Branch/PAC/PAC%20Minutes/1-17-18-cr.pdf
 - 404 https://sga.fsu.edu/financial/sga_financial_manual_22_23.pdf
 - 404 https://sai.fsu.edu/sites/g/files/upcbnu1651/files/docs/Notice_Privacy_Policy_3_6_19.pdf
-- no text (scanned image?) https://sai.fsu.edu/sites/g/files/upcbnu4446/files/PDFs/Class%20Councils/Minutes/SoCC-1-25-23.pdf
-- no text (scanned image?) https://sai.fsu.edu/sites/g/files/upcbnu4446/files/PDFs/Class%20Councils/Minutes/SoCC-1-18-23.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/signs/documents/1791946174_Official%20Election%20Results%20%281%29.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/signs/documents/1791946174_Official%20Election%20Results%20%281%29.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://sai.fsu.edu/sites/g/files/upcbnu4446/files/PDFs/Class%20Councils/Minutes/SoCC-1-25-23.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://sai.fsu.edu/sites/g/files/upcbnu4446/files/PDFs/Class%20Councils/Minutes/SoCC-1-18-23.pdf
 - skipped (too large, 36929326 bytes) https://sai.fsu.edu/sites/g/files/upcbnu4446/files/pictures/Agencies/HLSU/La-Familia-Magazine-23.pdf
-- no text (scanned image?) https://sai.fsu.edu/sites/g/files/upcbnu4446/files/pictures/Agencies/JSU/newsletters/JSU_Newsletter_Spring_2023.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://sai.fsu.edu/sites/g/files/upcbnu4446/files/pictures/Agencies/JSU/newsletters/JSU_Newsletter_Spring_2023.pdf
 - skipped (too large, 33467929 bytes) https://sai.fsu.edu/sites/default/files/pictures/Agencies/WSU/HerVoice/WOMXN_OF_FSU24-25.pdf
 - skipped (too large, 74302037 bytes) https://sai.fsu.edu/sites/default/files/pictures/Agencies/WSU/HerVoice/HERvoice%20Magazine%202024.pdf
 - skipped (too large, 39619295 bytes) https://sai.fsu.edu/sites/g/files/upcbnu4446/files/pictures/Agencies/WSU/HerVoice/HERVoice23.pdf
@@ -86,189 +86,189 @@
 - skipped (too large, 53072464 bytes) https://sai.fsu.edu/sites/g/files/upcbnu4446/files/pictures/Agencies/WSU/HerVoice/2021-Final-In-Living-COVID.pdf
 - skipped (too large, 50677090 bytes) https://sai.fsu.edu/sites/g/files/upcbnu4446/files/pictures/Agencies/WSU/HerVoice/2020-HER-VOICE-PUBLICATION.pdf
 - The PDF file is empty, i.e. its size is zero bytes. https://sai.fsu.edu/sites/g/files/upcbnu4446/files/media/PDF/Agency%20Guidebook%202023-2024-1.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ordinances/documents/1720723636_B42-069.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1737408991_EO-7901.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1736783747_A&S%20Fee%20Allocation%20MOU%2002.29.24.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1736543528_Memo%202007-01.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1711574083_B52-064.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713365180_B56-008.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713537278_B56-076.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713538331_B56-079.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713538543_B56-085.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713201463_B61-019.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713203553_B61-038.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709669291_B71-060.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1712079490_B53-100.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713452939_B56-070.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1744044559_B43-034.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709585841_B72-049.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709671517_B71-097.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1714584606_B52-066.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1714071444_B62-102[1].pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713203895_B61-050.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1714071227_B62-095[1].pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709671001_B71-084.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713538615_B56-086.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1714070957_B62-086[1].pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1712083021_B53-108.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1743615364_B43-012.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709585982_B72-051.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1712083162_B53-111.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709665373_B71-018.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1744221861_B43-069.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1743615485_B43-013.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1714071290_B62-097[1].pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1720722950_B42-047.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1712079604_B53-102.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1714412058_B68-039.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709584396_B72-017.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1712083710_B53-125.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1712867959_B61-006.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713202333_B61-028.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1714417234_B68-074.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709671812_B71-102.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709584181_B72-012.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1712083401_B53-117.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713203751_B61-043.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709585590_B72-041.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1712000448_B53-042.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709671957_B71-105.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713365612_B56-009.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713539866_B56-097.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709670590_B71-076.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709585656_B72-042.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713453239_B56-072.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1711561909_B52-019.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1714415436_B68-061.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713537979_B56-078.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713201033_B61-013.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1714576118_B62-091.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709665171_B71-015.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709667504_B71-033.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709665467_B71-019.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1714415723_B68-062.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1711999407_B53-015.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709670709_B71-077.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713539641_B56-095.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1744220525_B43-051.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713903821_B62-002[1].pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1714071534_B62-105[1].pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713453399_B56-073.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1714576140_B62-103.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1714070292_B62-082[1].pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1714071505_B62-104[1].pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1714413051_B68-057.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1712002492_B53-047.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1712083569_B53-119.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713539948_B56-098.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713203822_B61-047.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709665563_B71-020.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709665725_B71-023.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709667200_B71-029.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709668688_B71-044.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709668345_B71-041.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709670054_B71-070.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709671088_B71-089.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709671157_B71-090.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709671875_B71-103.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713201111_B61-016.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713205221_B61-073.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1711998922_B53-008.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1712868909_B61-009.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1714412485_B68-045.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1714071346_B62-099[1].pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713468690_B40-018.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1720723133_B42-051.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1711999066_B53-012.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709584290_B72-014.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713205412_B61-082.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709668168_B71-039.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709664908_B71-010.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709670789_B71-078.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713203866_B61-049.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1714071199_B62-094[1].pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1720723362_B42-063.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1743609428_B43-008.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1744042983_B43-026.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1744043073_B43-027.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713201011_B61-012.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713204846_B61-068.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713205386_B61-081.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713205432_B61-083.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713904966_B62-031[1].pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1714071317_B62-098[1].pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1714416435_B68-069.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713468172_B40-003.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713468293_B40-004%20(1).pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713469914_B40-036.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1744044812_B43-040.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1712867755_B61-001.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713205329_B61-079.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1714071167_B62-093[1].pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709669489_B71-066.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709669681_B71-067.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1743610187_B43-009.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713538990_B56-089.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709009210_B61-021.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713201529_B61-021.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713905208_B62-039[1].pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713905310_B62-041[1].pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713203952_B61-052.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1714068811_B62-080[1].pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709738899_B67-012.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1711637764_B64-073.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713538419_B56-083.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1714067933_B62-060[1].pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709670432_B71-075.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1720724509_B42-103.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1714068527_B62-070[1].pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709668910_B71-052.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709670875_B71-079.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709671220_B71-091.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1714412941_B68-055.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709851724_R71-073.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709846214_R71-021.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709589110_R72-010.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709851015_R71-067.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709851813_R71-074.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709852156_R71-080.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1714073156_R62-007[1].pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709845602_R71-014.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709851087_R71-068.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709588893_R72-009.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709589537_R72-017.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709851987_R71-077.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709852243_R71-081.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1740589468_B71-2020.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1740589489_B68-2017.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1740589519_B64-2013.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1740589536_B62-2011.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1740589543_B61-2010.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1740589616_B53-2002.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1740589609_B52-2001.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1740589592_B50-099.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1740589430_B49-098.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1740589385_B48-096.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1740589371_B47-095.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1740589362_B46-094.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1740589354_B45-093.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1740589344_B44-092.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1740589327_B43-091.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1740589318_B42-090.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1740589114_B41-089.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1740778985_B72-005.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1740779074_B70-004.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1740779165_B68-002.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1741020125_B67-007.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1741020366_B61-072.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1741020410_B61-004.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1741020856_B53-011.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1741020890_B52-014.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1741020956_B49-027.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1741021174_B56-087.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1741021033_B52-063.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1740779406_B48-137.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1790711739_B78-039%20Bill%20%2378-039%20Vetoed.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1784822046_Oct%206%2C%202010-%20Bill%2091.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1789571379_Bill%2097.pdf
-- no text (scanned image?) https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1750961025_B55-052%202003-09-17.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ordinances/documents/1720723636_B42-069.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1737408991_EO-7901.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1736783747_A&S%20Fee%20Allocation%20MOU%2002.29.24.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1736543528_Memo%202007-01.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1711574083_B52-064.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713365180_B56-008.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713537278_B56-076.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713538331_B56-079.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713538543_B56-085.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713201463_B61-019.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713203553_B61-038.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709669291_B71-060.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1712079490_B53-100.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713452939_B56-070.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1744044559_B43-034.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709585841_B72-049.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709671517_B71-097.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1714584606_B52-066.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1714071444_B62-102[1].pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713203895_B61-050.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1714071227_B62-095[1].pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709671001_B71-084.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713538615_B56-086.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1714070957_B62-086[1].pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1712083021_B53-108.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1743615364_B43-012.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709585982_B72-051.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1712083162_B53-111.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709665373_B71-018.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1744221861_B43-069.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1743615485_B43-013.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1714071290_B62-097[1].pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1720722950_B42-047.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1712079604_B53-102.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1714412058_B68-039.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709584396_B72-017.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1712083710_B53-125.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1712867959_B61-006.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713202333_B61-028.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1714417234_B68-074.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709671812_B71-102.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709584181_B72-012.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1712083401_B53-117.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713203751_B61-043.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709585590_B72-041.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1712000448_B53-042.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709671957_B71-105.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713365612_B56-009.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713539866_B56-097.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709670590_B71-076.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709585656_B72-042.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713453239_B56-072.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1711561909_B52-019.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1714415436_B68-061.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713537979_B56-078.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713201033_B61-013.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1714576118_B62-091.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709665171_B71-015.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709667504_B71-033.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709665467_B71-019.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1714415723_B68-062.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1711999407_B53-015.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709670709_B71-077.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713539641_B56-095.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1744220525_B43-051.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713903821_B62-002[1].pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1714071534_B62-105[1].pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713453399_B56-073.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1714576140_B62-103.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1714070292_B62-082[1].pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1714071505_B62-104[1].pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1714413051_B68-057.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1712002492_B53-047.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1712083569_B53-119.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713539948_B56-098.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713203822_B61-047.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709665563_B71-020.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709665725_B71-023.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709667200_B71-029.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709668688_B71-044.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709668345_B71-041.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709670054_B71-070.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709671088_B71-089.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709671157_B71-090.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709671875_B71-103.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713201111_B61-016.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713205221_B61-073.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1711998922_B53-008.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1712868909_B61-009.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1714412485_B68-045.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1714071346_B62-099[1].pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713468690_B40-018.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1720723133_B42-051.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1711999066_B53-012.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709584290_B72-014.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713205412_B61-082.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709668168_B71-039.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709664908_B71-010.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709670789_B71-078.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713203866_B61-049.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1714071199_B62-094[1].pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1720723362_B42-063.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1743609428_B43-008.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1744042983_B43-026.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1744043073_B43-027.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713201011_B61-012.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713204846_B61-068.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713205386_B61-081.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713205432_B61-083.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713904966_B62-031[1].pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1714071317_B62-098[1].pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1714416435_B68-069.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713468172_B40-003.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713468293_B40-004%20(1).pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713469914_B40-036.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1744044812_B43-040.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1712867755_B61-001.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713205329_B61-079.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1714071167_B62-093[1].pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709669489_B71-066.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709669681_B71-067.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1743610187_B43-009.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713538990_B56-089.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709009210_B61-021.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713201529_B61-021.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713905208_B62-039[1].pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713905310_B62-041[1].pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713203952_B61-052.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1714068811_B62-080[1].pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709738899_B67-012.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1711637764_B64-073.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1713538419_B56-083.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1714067933_B62-060[1].pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709670432_B71-075.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1720724509_B42-103.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1714068527_B62-070[1].pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709668910_B71-052.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709670875_B71-079.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709671220_B71-091.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1714412941_B68-055.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709851724_R71-073.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709846214_R71-021.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709589110_R72-010.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709851015_R71-067.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709851813_R71-074.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709852156_R71-080.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1714073156_R62-007[1].pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709845602_R71-014.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709851087_R71-068.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709588893_R72-009.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709589537_R72-017.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709851987_R71-077.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1709852243_R71-081.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1740589468_B71-2020.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1740589489_B68-2017.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1740589519_B64-2013.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1740589536_B62-2011.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1740589543_B61-2010.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1740589616_B53-2002.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1740589609_B52-2001.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1740589592_B50-099.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1740589430_B49-098.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1740589385_B48-096.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1740589371_B47-095.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1740589362_B46-094.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1740589354_B45-093.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1740589344_B44-092.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1740589327_B43-091.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1740589318_B42-090.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1740589114_B41-089.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1740778985_B72-005.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1740779074_B70-004.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1740779165_B68-002.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1741020125_B67-007.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1741020366_B61-072.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1741020410_B61-004.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1741020856_B53-011.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1741020890_B52-014.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1741020956_B49-027.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1741021174_B56-087.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1741021033_B52-063.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1740779406_B48-137.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1790711739_B78-039%20Bill%20%2378-039%20Vetoed.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1784822046_Oct%206%2C%202010-%20Bill%2091.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/plan/documents/1789571379_Bill%2097.pdf
+- Cannot perform Construct on a detached ArrayBuffer https://s3-us-west-2.amazonaws.com/municipalcodeonline.com-new/fsusga/ADC/files/ordinance/1750961025_B55-052%202003-09-17.pdf

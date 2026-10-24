@@ -12,7 +12,8 @@ const args = process.argv.slice(2);
 const remote = args.includes("--remote") ? args[args.indexOf("--remote") + 1] : "origin";
 const git = (...a: string[]) => execFileSync("git", a, { encoding: "utf8", maxBuffer: 1024 * 1024 * 1024 });
 
-git("fetch", "--depth", "1", remote, "corpus-data:refs/remotes/" + remote + "/corpus-data");
+// "+": the crawl force-pushes a fresh branch each week, so the update is never a fast-forward.
+git("fetch", "--depth", "1", remote, "+corpus-data:refs/remotes/" + remote + "/corpus-data");
 const ref = `${remote}/corpus-data`;
 await mkdir(DEFAULT_CORPUS_DIR, { recursive: true });
 const files = git("ls-tree", "--name-only", ref).split("\n").filter(Boolean);

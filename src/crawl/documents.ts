@@ -7,7 +7,9 @@ import type { CorpusSection } from "./types.js";
 
 /** One section per PDF page, so citations can name the page. */
 export async function pdfSections(bytes: Uint8Array): Promise<{ title?: string; sections: CorpusSection[] }> {
-  const pdf = await getDocumentProxy(bytes);
+  // pdf.js takes ownership of (detaches) the buffer it's given; pass a copy so the caller
+  // can still use the bytes, e.g. for OCR when there's no text layer.
+  const pdf = await getDocumentProxy(bytes.slice());
   const meta = await pdf.getMetadata().catch(() => null);
   const { text } = await extractText(pdf, { mergePages: false });
   const sections = text

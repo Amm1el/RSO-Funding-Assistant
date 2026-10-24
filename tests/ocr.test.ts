@@ -9,6 +9,12 @@ describe.skipIf(!ocrAvailable())("OCR for scanned PDFs", () => {
     const bytes = new Uint8Array(await readFile("tests/fixtures/scanned.pdf"));
     expect((await pdfSections(bytes)).sections).toHaveLength(0);
   });
+  it("still has the bytes for OCR after the text extractor ran, as in the crawler", async () => {
+    const bytes = new Uint8Array(await readFile("tests/fixtures/scanned.pdf"));
+    await pdfSections(bytes);
+    expect(bytes.byteLength).toBeGreaterThan(0);
+    expect((await ocrPdfSections(bytes)).sections).toHaveLength(1);
+  });
   it("reads the page image and keeps the page number", async () => {
     const { sections } = await ocrPdfSections(new Uint8Array(await readFile("tests/fixtures/scanned.pdf")));
     expect(sections).toHaveLength(1);
