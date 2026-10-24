@@ -60,7 +60,8 @@ describe("embedders", () => {
   });
 
   it("recreates the embedder a document was ingested with", () => {
-    expect(embedderByName("hash:bow-1536").name).toBe("hash:bow-1536");
+    expect(embedderByName("hash:bow2-1536").name).toBe("hash:bow2-1536");
+    expect(() => embedderByName("hash:bow-1536")).toThrow(/Re-ingest/);
     expect(() => embedderByName("mystery:model")).toThrow();
   });
 });
@@ -75,7 +76,7 @@ describe("USE_AI switch", () => {
     const { createGenerator } = await import("../src/runtime.js");
     const { defaultEmbedder } = await import("../src/embeddings.js");
     expect(createGenerator().name).toBe("extractive");
-    expect(defaultEmbedder().name).toBe("hash:bow-1536");
+    expect(defaultEmbedder().name).toBe("hash:bow2-1536");
     vi.unstubAllEnvs();
     vi.resetModules();
   });

@@ -21,6 +21,8 @@ ALTER TABLE documents ADD COLUMN IF NOT EXISTS kind TEXT NOT NULL DEFAULT 'docum
 ALTER TABLE documents ADD COLUMN IF NOT EXISTS collection TEXT NOT NULL DEFAULT 'funding';
 ALTER TABLE documents ADD COLUMN IF NOT EXISTS parent TEXT;
 ALTER TABLE documents ADD COLUMN IF NOT EXISTS fetched_at TIMESTAMPTZ;
+-- How much this source counts in ranking (governing and current > historical); see src/corpus/authority.ts.
+ALTER TABLE documents ADD COLUMN IF NOT EXISTS weight REAL NOT NULL DEFAULT 1;
 
 -- Each source is stored once per embedder (offline and OpenAI side by side), so turning
 -- USE_AI on or off switches instantly without re-ingesting. A source is identified by its
@@ -78,3 +80,16 @@ CREATE TABLE IF NOT EXISTS meta (
   value      JSONB NOT NULL,
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+-- v0.3: BM25 keyword search. An inverted index of stemmed terms (same tokenizer as the
+-- embedder and the phone build: src/terms.ts) with per-chunk term frequencies, so the
+-- keyword half of hybrid search can weight rare words above common ones (IDF), which
+-- Postgres's built-in ts_rank does not.
+ALTER TABLE chunks ADD COLUMN IF NOT EXISTS term_count INTEGER NOT NULL DEFAULT 0;
+CREATE TABLE IF NOT EXISTS chunk_terms (
+  chunk_id INTEGER NOT NULL REFERENCES chunks(id) ON DELETE CASCADE,
+  term     TEXT NOT NULL,
+  tf       SMALLINT NOT NULL,
+  PRIMARY KEY (term, chunk_id)
+);
+CREATE INDEX IF NOT EXISTS chunk_terms_chunk ON chunk_terms (chunk_id);

@@ -22,6 +22,8 @@ const mode = (flag("--mode") ?? "hybrid") as RetrievalMode;
 const minPass = Number(flag("--min-pass") ?? 0);
 const minRetrieval = Number(flag("--min-retrieval") ?? 0);
 const note = flag("--record");
+/** Search one section only (e.g. funding); default: each case's own collection, else all sources. */
+const collectionFlag = flag("--collection");
 const judge = args.includes("--judge") ? new ClaudeJudge() : null;
 
 const cases = await loadEvalCases("evals/questions.jsonl");
@@ -31,7 +33,8 @@ console.log(`Evaluating ${cases.length} cases: ${deps.embedder.name} retrieval (
 
 const results: (CaseResult & { answer: string; judgeReason?: string })[] = [];
 for (const c of cases) {
-  const chunks = await retrieve(deps, c.question, undefined, mode);
+  const collection = collectionFlag === "all" ? null : (collectionFlag ?? c.collection ?? null);
+  const chunks = await retrieve(deps, c.question, undefined, mode, { collection });
   const answer = chunks.length
     ? finalizeAnswer(await deps.generator.generate(c.question, chunks), chunks)
     : { answerable: false, answer: "", citations: [] };
@@ -56,7 +59,7 @@ const summary = summarize(results);
 console.log("");
 console.table(summary);
 
-const config = { embedder: deps.embedder.name, mode, generator: deps.generator.name, judge: Boolean(judge) };
+const config = { embedder: deps.embedder.name, mode, generator: deps.generator.name, judge: Boolean(judge), collection: collectionFlag ?? "per-case", sources: deps.corpus.documents };
 const stamp = new Date().toISOString();
 await mkdir("evals/results", { recursive: true });
 const file = `evals/results/${stamp.slice(0, 19).replace(/:/g, "")}-${deps.generator.name.replace(/[:/]/g, "_")}.json`;

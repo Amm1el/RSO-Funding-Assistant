@@ -20,6 +20,8 @@ export interface RetrievedChunk extends Chunk {
   /** Title of the source document, e.g. "2026-27 RSO Financial Manual". */
   title?: string;
   kind?: string;
+  /** Ranking multiplier for the chunk's source (see src/corpus/authority.ts). */
+  weight?: number;
 }
 
 export interface Citation {

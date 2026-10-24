@@ -26,7 +26,7 @@ const { createPool, getActiveCorpus, migrate } = await import("../db.js");
 const { loadCorpus, manualAsDoc, DEFAULT_CORPUS_DIR } = await import("../corpus/load.js");
 const { ingestCorpus } = await import("../corpus/ingest.js");
 const { defaultEmbedder } = await import("../embeddings.js");
-const { allowedProviders, createDeps } = await import("../runtime.js");
+const { allowedEmbedders, createDeps } = await import("../runtime.js");
 const { createApp } = await import("../server.js");
 
 if (!existsSync(manual)) {
@@ -52,7 +52,7 @@ const corpusDocs = args.includes("--manual-only") ? [] : await loadCorpus(join(r
 
 const pool = createPool();
 await migrate(pool);
-const existing = await getActiveCorpus(pool, allowedProviders().slice(0, 1));
+const existing = await getActiveCorpus(pool, allowedEmbedders().slice(0, 1));
 const stale = corpusDocs.length > 0 && (existing?.documents ?? 0) < corpusDocs.length * 0.9;
 if (!existing || stale) {
   console.log(corpusDocs.length ? `Loading ${corpusDocs.length} SGA sources (first run takes a few minutes)...` : "Loading the Financial Manual (first run only)...");

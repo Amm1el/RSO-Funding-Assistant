@@ -5,7 +5,7 @@
  * standing in for Postgres full-text search. The corpus ships gzipped inside the page.
  */
 import { HashEmbedder } from "../../src/hash-embedder";
-import { reciprocalRankFusion } from "../../src/fusion";
+import { weightedFusion } from "../../src/fusion";
 import { extractAnswer, terms } from "../../src/extractive";
 import { finalizeAnswer } from "../../src/citations";
 import type { RetrievedChunk } from "../../src/types";
@@ -13,14 +13,17 @@ import { CORPUS_GZ_BASE64 } from "./generated/corpus-data";
 import type { AskResponse, Collection, Directory, Health } from "./api";
 
 const TOP_K = 6;
-const CANDIDATES = 20;
+/** BM25 parameters; the server uses the same (src/db.ts). */
+const K1 = 1.2;
+const B = 0.75;
+const CANDIDATES = 40;
 const embedder = new HashEmbedder();
 
 interface Payload {
   sources: number;
   updatedAt: string;
   collections: Collection[];
-  chunks: [string, string, string, number, number, string, string][];
+  chunks: [string, string, string, number, number, string, string, number][];
   directory: Directory;
 }
 
@@ -44,8 +47,8 @@ let indexPromise: Promise<Index> | undefined;
 function index(): Promise<Index> {
   return (indexPromise ??= (async () => {
     const payload = await decode();
-    const chunks: RetrievedChunk[] = payload.chunks.map(([collection, title, section, pageStart, pageEnd, url, content], i) => ({
-      id: i + 1, ordinal: i, collection, title, section, pageStart, pageEnd, url, content, similarity: 0,
+    const chunks: RetrievedChunk[] = payload.chunks.map(([collection, title, section, pageStart, pageEnd, url, content, weight], i) => ({
+      id: i + 1, ordinal: i, collection, title, section, pageStart, pageEnd, url, content, weight: weight ?? 1, similarity: 0,
     }));
     const raw = await embedder.embed(chunks.map((c) => `${c.title}\n${c.section}\n${c.content}`));
     const vectors = raw.map((v) => Float32Array.from(v));
@@ -73,7 +76,7 @@ function bm25(ix: Index, query: string, allowed: (c: RetrievedChunk) => boolean)
       if (!f) continue;
       const df = ix.docFreq.get(term) ?? 0;
       const idf = Math.log(1 + (n - df + 0.5) / (df + 0.5));
-      score += (idf * f * 2.2) / (f + 1.2 * (0.25 + 0.75 * (ix.lengths[i] / ix.avgLen)));
+      score += (idf * f * (K1 + 1)) / (f + K1 * (1 - B + B * (ix.lengths[i] / ix.avgLen)));
     }
     if (score > 0) scored.push({ chunk: ix.chunks[i], score });
   });
@@ -106,7 +109,7 @@ export async function askLocally(question: string, collection: string | null = n
     };
   }
   const similarity = new Map(top.map((c) => [c.id, c.similarity]));
-  const passages = reciprocalRankFusion([top, bm25(ix, question, allowed)])
+  const passages = weightedFusion([top, bm25(ix, question, allowed)])
     .slice(0, TOP_K)
     .map(({ item }) => ({ ...item, similarity: similarity.get(item.id) ?? 0 }));
   const answer = finalizeAnswer(extractAnswer(question, passages), passages);

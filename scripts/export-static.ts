@@ -8,6 +8,7 @@ import { DEFAULT_CORPUS_DIR, loadCorpus, manualAsDoc } from "../src/corpus/load.
 import { chunkCorpus } from "../src/corpus/ingest.js";
 import { buildDirectory } from "../src/corpus/directory.js";
 import { COLLECTIONS } from "../src/corpus/collections.js";
+import { sourceWeight } from "../src/corpus/authority.js";
 
 const args = process.argv.slice(2);
 const flag = (n: string) => (args.includes(n) ? args[args.indexOf(n) + 1] : undefined);
@@ -26,7 +27,7 @@ const kept = docs.filter((d) => d.kind !== "meeting" || String(d.meta?.date ?? "
 const chunks: unknown[] = [];
 for (const { doc, chunks: cs } of chunkCorpus(kept)) {
   for (const c of cs) {
-    chunks.push([c.collection, doc.title, c.section, c.pageStart, c.pageEnd, c.url ?? doc.url, c.content]);
+    chunks.push([c.collection, doc.title, c.section, c.pageStart, c.pageEnd, c.url ?? doc.url, c.content, Math.round(sourceWeight(doc) * 100) / 100]);
   }
 }
 const counts: Record<string, number> = {};

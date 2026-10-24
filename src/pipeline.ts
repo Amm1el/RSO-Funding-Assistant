@@ -3,7 +3,7 @@ import { keywordSearch, searchChunks } from "./db.js";
 import type { Embedder } from "./embeddings.js";
 import { finalizeAnswer, type AnswerGenerator } from "./answer.js";
 import type { Answer, RetrievedChunk } from "./types.js";
-import { reciprocalRankFusion } from "./fusion.js";
+import { reciprocalRankFusion, weightedFusion } from "./fusion.js";
 
 export { reciprocalRankFusion };
 
@@ -23,7 +23,7 @@ export type RetrievalMode = "hybrid" | "vector";
 
 export const TOP_K = 6;
 /** How many candidates each search contributes before fusion. */
-const CANDIDATES = 20;
+const CANDIDATES = 40;
 /**
  * Finds the manual passages most relevant to a question.
  *
@@ -47,7 +47,7 @@ export async function retrieve(
 
   const byKeyword = await keywordSearch(deps.pool, scope, question, CANDIDATES);
   const similarity = new Map(byVector.map((c) => [c.id, c.similarity]));
-  return reciprocalRankFusion([byVector, byKeyword])
+  return weightedFusion([byVector, byKeyword])
     .slice(0, k)
     .map(({ item }) => ({ ...item, similarity: similarity.get(item.id) ?? 0 }));
 }

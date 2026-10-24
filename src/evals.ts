@@ -15,6 +15,8 @@ export const EvalCase = z.object({
   reference_answer: z.string().optional(),
   /** lookup = one fact; number = a limit, amount or deadline; multi = needs several facts; refuse = not in the manual. */
   category: z.enum(["lookup", "number", "multi", "refuse"]).optional(),
+  /** The app section a user would ask this in; the eval searches only that section unless --collection all. */
+  collection: z.string().optional(),
   /** True once a person who knows the rules (the RSOAC chair) has checked the case. */
   verified: z.boolean(),
 });

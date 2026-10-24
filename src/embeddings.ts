@@ -38,7 +38,11 @@ export class OpenAIEmbedder implements Embedder {
 
 /** Recreates the embedder a document was ingested with, so questions use the same model. */
 export function embedderByName(name: string): Embedder {
-  if (name.startsWith("hash:")) return new HashEmbedder();
+  if (name.startsWith("hash:")) {
+    const current = new HashEmbedder();
+    if (name !== current.name) throw new Error(`The sources were indexed with ${name}; this version uses ${current.name}. Re-ingest (npm run ingest:corpus).`);
+    return current;
+  }
   if (name.startsWith("ollama:")) return new OllamaEmbedder(name.slice("ollama:".length));
   if (name.startsWith("openai:")) {
     if (name !== `openai:${config.EMBEDDING_MODEL}`) {

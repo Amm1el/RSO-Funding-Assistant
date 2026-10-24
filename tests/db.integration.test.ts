@@ -19,7 +19,7 @@ describe(`Postgres + pgvector (${url.split(":")[0]})`, () => {
 
   beforeAll(async () => {
     pool = createPool(url);
-    await pool.query("DROP TABLE IF EXISTS chunks, documents");
+    await pool.query("DROP TABLE IF EXISTS chunk_terms, chunks, documents, meta");
     await migrate(pool);
   });
   afterAll(async () => pool?.end());
@@ -55,16 +55,16 @@ describe(`Postgres + pgvector (${url.split(":")[0]})`, () => {
   });
 
   it("reports the active corpus with counts per section, per embedder", async () => {
-    const info = await getActiveCorpus(pool, ["hash"]);
-    expect(info).toMatchObject({ embedder: "hash:bow-1536", documents: 1, chunks: 3, collections: { funding: 2, elections: 1 } });
-    expect(await getActiveCorpus(pool, ["openai"])).toBeNull();
+    const info = await getActiveCorpus(pool, [embedder.name]);
+    expect(info).toMatchObject({ embedder: embedder.name, documents: 1, chunks: 3, collections: { funding: 2, elections: 1 } });
+    expect(await getActiveCorpus(pool, ["openai:text-embedding-3-small"])).toBeNull();
   });
 
   it("replaces a whole corpus in one transaction, and rolls back on failure", async () => {
     await expect(
       replaceCorpus(pool, embedder.name, [{ doc: { title: "Bad", url: "https://x/bad" }, chunks, embeddings: [] }]),
     ).rejects.toThrow();
-    expect((await getActiveCorpus(pool, ["hash"]))?.chunks).toBe(3); // untouched
+    expect((await getActiveCorpus(pool, [embedder.name]))?.chunks).toBe(3); // untouched
   });
 
   const manual = "data/26-27SGAFM.pdf";

@@ -3,6 +3,14 @@ import { toSql } from "pgvector";
 import { config } from "./config.js";
 import { createDbPool, type DbPool, type Queryable } from "./dbpool.js";
 import type { Chunk, RetrievedChunk } from "./types.js";
+import { terms } from "./terms.js";
+
+/** Term frequencies for BM25, from the same tokenizer the embedder and phone build use. */
+export function termFrequencies(text: string): Map<string, number> {
+  const tf = new Map<string, number>();
+  for (const t of terms(text)) if (t.length <= 60) tf.set(t, (tf.get(t) ?? 0) + 1);
+  return tf;
+}
 
 export type { DbPool } from "./dbpool.js";
 
@@ -26,6 +34,8 @@ export interface DocumentInput {
   collection?: string;
   parent?: string;
   fetchedAt?: string;
+  /** Ranking multiplier: governing and current sources > historical ones. */
+  weight?: number;
 }
 
 /** Which searchable corpus to use, and optionally which section of it. */
@@ -51,24 +61,41 @@ async function insertDocument(client: Queryable, doc: DocumentInput, chunks: Chu
     doc.embedder,
   ]);
   const { rows } = await client.query<{ id: number }>(
-    `INSERT INTO documents (title, version, source_file, embedder, url, kind, collection, parent, fetched_at)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id`,
-    [doc.title, doc.version ?? "", doc.sourceFile ?? doc.url ?? "", doc.embedder, doc.url ?? null, doc.kind ?? "document", doc.collection ?? "funding", doc.parent ?? null, doc.fetchedAt ?? null],
+    `INSERT INTO documents (title, version, source_file, embedder, url, kind, collection, parent, fetched_at, weight)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id`,
+    [doc.title, doc.version ?? "", doc.sourceFile ?? doc.url ?? "", doc.embedder, doc.url ?? null, doc.kind ?? "document", doc.collection ?? "funding", doc.parent ?? null, doc.fetchedAt ?? null, doc.weight ?? 1],
   );
   const documentId = rows[0].id;
   // Multi-row inserts: one round trip per 100 chunks instead of one per chunk.
   for (let i = 0; i < chunks.length; i += 100) {
     const batch = chunks.slice(i, i + 100);
     const values: unknown[] = [];
+    const freqs = batch.map((c) => termFrequencies(`${doc.title} ${c.section} ${c.content}`));
     const tuples = batch.map((c, j) => {
-      const b = j * 9;
-      values.push(documentId, c.ordinal, c.section, c.pageStart, c.pageEnd, c.content, toSql(embeddings[i + j]), c.url ?? null, c.collection ?? doc.collection ?? "funding");
-      return `($${b + 1}, $${b + 2}, $${b + 3}, $${b + 4}, $${b + 5}, $${b + 6}, $${b + 7}::vector, $${b + 8}, $${b + 9})`;
+      const b = j * 10;
+      const termCount = [...freqs[j].values()].reduce((s, n) => s + n, 0);
+      values.push(documentId, c.ordinal, c.section, c.pageStart, c.pageEnd, c.content, toSql(embeddings[i + j]), c.url ?? null, c.collection ?? doc.collection ?? "funding", termCount);
+      return `($${b + 1}, $${b + 2}, $${b + 3}, $${b + 4}, $${b + 5}, $${b + 6}, $${b + 7}::vector, $${b + 8}, $${b + 9}, $${b + 10})`;
     });
-    await client.query(
-      `INSERT INTO chunks (document_id, ordinal, section, page_start, page_end, content, embedding, url, collection) VALUES ${tuples.join(", ")}`,
+    const { rows: ids } = await client.query<{ id: number }>(
+      `INSERT INTO chunks (document_id, ordinal, section, page_start, page_end, content, embedding, url, collection, term_count)
+       VALUES ${tuples.join(", ")} RETURNING id`,
       values,
     );
+    // The inverted index for BM25, as three parallel arrays (one round trip per batch).
+    const chunkIds: number[] = [];
+    const termList: string[] = [];
+    const tfs: number[] = [];
+    ids.forEach(({ id }, j) => {
+      for (const [term, tf] of freqs[j]) {
+        chunkIds.push(id);
+        termList.push(term);
+        tfs.push(Math.min(tf, 32767));
+      }
+    });
+    if (chunkIds.length) {
+      await client.query("INSERT INTO chunk_terms (chunk_id, term, tf) SELECT * FROM unnest($1::int[], $2::text[], $3::smallint[])", [chunkIds, termList, tfs]);
+    }
   }
   return documentId;
 }
@@ -110,19 +137,19 @@ export async function replaceCorpus(
 }
 
 /**
- * The corpus questions are answered from. `providers` lists the embedding providers allowed
- * in the current mode, most preferred first (e.g. ["openai", "hash"]).
+ * The corpus questions are answered from. `embedders` lists the embedder names allowed in the
+ * current mode, most preferred first (e.g. ["openai:text-embedding-3-small", "hash:bow2-1536"]).
  */
-export async function getActiveCorpus(pool: DbPool, providers: string[] = ["hash"]): Promise<CorpusInfo | null> {
+export async function getActiveCorpus(pool: DbPool, embedders: string[]): Promise<CorpusInfo | null> {
   const { rows } = await pool.query<{ embedder: string; documents: number; chunks: number; updated_at: string | null }>(
     `SELECT d.embedder, count(DISTINCT d.id)::int AS documents, count(c.id)::int AS chunks,
             max(coalesce(d.fetched_at, d.ingested_at))::text AS updated_at
        FROM documents d JOIN chunks c ON c.document_id = d.id
-      WHERE split_part(d.embedder, ':', 1) = ANY($1)
+      WHERE d.embedder = ANY($1)
       GROUP BY d.embedder
-      ORDER BY array_position($1, split_part(d.embedder, ':', 1)), count(c.id) DESC
+      ORDER BY array_position($1, d.embedder), count(c.id) DESC
       LIMIT 1`,
-    [providers],
+    [embedders],
   );
   if (!rows[0]) return null;
   const { rows: byCollection } = await pool.query<{ collection: string; n: number }>(
@@ -139,7 +166,7 @@ export async function getActiveCorpus(pool: DbPool, providers: string[] = ["hash
   };
 }
 
-const COLUMNS = `c.id, c.ordinal, c.section, c.page_start, c.page_end, c.content, c.url, c.collection, d.title, d.kind`;
+const COLUMNS = `c.id, c.ordinal, c.section, c.page_start, c.page_end, c.content, c.url, c.collection, d.title, d.kind, d.weight`;
 
 function toChunk(r: Record<string, unknown>, similarity: number): RetrievedChunk {
   return {
@@ -153,6 +180,7 @@ function toChunk(r: Record<string, unknown>, similarity: number): RetrievedChunk
     collection: r.collection as string,
     title: r.title as string,
     kind: r.kind as string,
+    weight: Number(r.weight ?? 1),
     similarity,
   };
 }
@@ -170,24 +198,45 @@ export async function searchChunks(pool: DbPool, scope: Scope, queryEmbedding: n
   return rows.map((r) => toChunk(r, Number(r.similarity)));
 }
 
+/** BM25 parameters, shared with the phone build (web/src/engine.ts). */
+export const BM25_K1 = 1.2;
+export const BM25_B = 0.75;
+
 /**
- * Top-k chunks by Postgres full-text rank. The question's words are OR-ed together
- * (plainto_tsquery would AND them, and a natural-language question rarely matches every
- * word), stemmed, and stripped of stop words by the 'english' configuration.
+ * Top-k chunks by BM25 over the inverted index: each query term scores
+ * idf * tf * (k1 + 1) / (tf + k1 * (1 - b + b * len / avglen)), summed over terms.
+ * IDF and average length come from the whole corpus for this embedder.
  */
 export async function keywordSearch(pool: DbPool, scope: Scope, query: string, k: number): Promise<RetrievedChunk[]> {
+  const queryTerms = [...new Set(terms(query))];
+  if (!queryTerms.length) return [];
   const { rows } = await pool.query(
-    `WITH q AS (
-       SELECT to_tsquery('english', replace(plainto_tsquery('english', $1)::text, ' & ', ' | ')) AS query
+    `WITH corpus AS (
+       SELECT c.id, c.term_count FROM chunks c JOIN documents d ON d.id = c.document_id WHERE d.embedder = $2
+     ),
+     stats AS (SELECT count(*)::float8 AS n, greatest(avg(term_count), 1)::float8 AS avglen FROM corpus),
+     df AS (
+       SELECT t.term, count(*)::float8 AS df FROM chunk_terms t JOIN corpus ON corpus.id = t.chunk_id
+        WHERE t.term = ANY($1::text[]) GROUP BY t.term
+     ),
+     scored AS (
+       SELECT t.chunk_id,
+              sum(ln(1 + (stats.n - df.df + 0.5) / (df.df + 0.5))
+                  * t.tf * ($5::float8 + 1) / (t.tf + $5::float8 * (1 - $6::float8 + $6::float8 * c.term_count / stats.avglen))) AS score
+         FROM chunk_terms t
+         JOIN df ON df.term = t.term
+         JOIN chunks c ON c.id = t.chunk_id
+         JOIN documents d ON d.id = c.document_id
+         CROSS JOIN stats
+        WHERE t.term = ANY($1::text[]) AND d.embedder = $2 AND ($3::text IS NULL OR c.collection = $3)
+        GROUP BY t.chunk_id
+        ORDER BY score DESC
+        LIMIT $4
      )
-     -- Normalization 1 divides by log(length), so long chunks don't win just by containing more words.
-     SELECT ${COLUMNS}, ts_rank_cd(c.tsv, q.query, 1) AS rank
-       FROM chunks c JOIN documents d ON d.id = c.document_id, q
-      WHERE d.embedder = $2 AND ($3::text IS NULL OR c.collection = $3)
-        AND q.query IS NOT NULL AND c.tsv @@ q.query
-      ORDER BY rank DESC, c.id
-      LIMIT $4`,
-    [query, scope.embedder, scope.collection ?? null, k],
+     SELECT ${COLUMNS}, scored.score AS rank
+       FROM scored JOIN chunks c ON c.id = scored.chunk_id JOIN documents d ON d.id = c.document_id
+      ORDER BY scored.score DESC, c.id`,
+    [queryTerms, scope.embedder, scope.collection ?? null, k, BM25_K1, BM25_B],
   );
   return rows.map((r) => toChunk(r, 0));
 }

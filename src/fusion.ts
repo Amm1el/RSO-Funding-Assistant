@@ -17,3 +17,13 @@ export function reciprocalRankFusion<T extends { id: number }>(lists: T[][], k =
   }
   return [...scores.values()].sort((a, b) => b.score - a.score);
 }
+
+/**
+ * Fuses the rankings, then scales each item's fused score by its source weight, so a current
+ * rule outranks an old budget or a bill that matched the same words.
+ */
+export function weightedFusion<T extends { id: number; weight?: number }>(lists: T[][]): { item: T; score: number }[] {
+  return reciprocalRankFusion(lists)
+    .map(({ item, score }) => ({ item, score: score * (item.weight ?? 1) }))
+    .sort((a, b) => b.score - a.score);
+}

@@ -21,10 +21,9 @@ const REPO_ROOT = fileURLToPath(new URL("../", import.meta.url));
  */
 export function createDbPool(connectionString: string): DbPool {
   if (connectionString.startsWith("pglite:")) return createPglitePool(connectionString.replace(/^pglite:(\/\/)?/, ""));
-  const pool = new pg.Pool({ connectionString });
   // HNSW returns this many candidates before WHERE filters apply; a section filter needs
   // more than the default 40 so filtered searches still fill their top-k.
-  pool.on("connect", (client) => void client.query("SET hnsw.ef_search = 400").catch(() => {}));
+  const pool = new pg.Pool({ connectionString, options: "-c hnsw.ef_search=400" });
   return pool as unknown as DbPool;
 }
 

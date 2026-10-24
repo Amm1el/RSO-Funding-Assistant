@@ -1,7 +1,7 @@
 import type { DbPool } from "./dbpool.js";
 import { config } from "./config.js";
 import { getActiveCorpus, type CorpusInfo } from "./db.js";
-import { embedderByName } from "./embeddings.js";
+import { embedderByName, HashEmbedder } from "./embeddings.js";
 import { ClaudeAnswerGenerator, type AnswerGenerator } from "./answer.js";
 import { ExtractiveGenerator } from "./extractive.js";
 import { OllamaGenerator } from "./ollama.js";
@@ -28,13 +28,23 @@ export function allowedProviders(): string[] {
   return [...(config.OPENAI_API_KEY ? ["openai"] : []), ...(config.LOCAL_EMBEDDING_MODEL ? ["ollama"] : []), "hash"];
 }
 
+/** The exact embedder names this build can query, most preferred first (an index built by an older version is ignored). */
+export function allowedEmbedders(): string[] {
+  const names: Record<string, string> = {
+    openai: `openai:${config.EMBEDDING_MODEL}`,
+    ollama: `ollama:${config.LOCAL_EMBEDDING_MODEL}`,
+    hash: new HashEmbedder().name,
+  };
+  return allowedProviders().map((p) => names[p]);
+}
+
 /**
  * Builds everything the API, MCP server, CLI and evals need from one place. The embedder
  * comes from the stored corpus, so questions are always embedded with the same model that
  * embedded the sources.
  */
 export async function createDeps(pool: DbPool, generator: GeneratorChoice = "auto"): Promise<Deps & { corpus: CorpusInfo }> {
-  const corpus = await getActiveCorpus(pool, allowedProviders());
+  const corpus = await getActiveCorpus(pool, allowedEmbedders());
   if (!corpus) {
     throw new Error(
       "Nothing has been ingested for the current mode yet. Run: npm run ingest:corpus (or npm run demo, which does it for you).",

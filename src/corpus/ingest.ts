@@ -4,6 +4,7 @@ import { buildDirectory } from "./directory.js";
 import type { Embedder } from "../embeddings.js";
 import { docToChunks, type DocChunks } from "./chunk.js";
 import type { CollectionId } from "./collections.js";
+import { betterTitle, dropNearDuplicates, sourceWeight } from "./authority.js";
 
 export interface IngestSummary {
   documents: number;
@@ -12,7 +13,10 @@ export interface IngestSummary {
 }
 
 /** Chunks every source (pages first, so linked documents can inherit their page's section). */
-export function chunkCorpus(docs: CorpusDoc[]): DocChunks[] {
+export function chunkCorpus(input: CorpusDoc[], log: (m: string) => void = () => {}): DocChunks[] {
+  const titled = input.map((d) => ({ ...d, title: betterTitle(d) }));
+  const { kept: docs, dropped } = dropNearDuplicates(titled);
+  if (dropped.length) log(`Dropped ${dropped.length} near-duplicate documents (older or repeated editions).`);
   const byParent = new Map<string, CollectionId>();
   const out: DocChunks[] = [];
   for (const doc of [...docs].sort((a, b) => Number(a.kind !== "page") - Number(b.kind !== "page"))) {
@@ -26,7 +30,7 @@ export function chunkCorpus(docs: CorpusDoc[]): DocChunks[] {
 
 /** Chunks, embeds and stores a whole corpus for one embedder, replacing what was there. */
 export async function ingestCorpus(pool: DbPool, docs: CorpusDoc[], embedder: Embedder, log: (m: string) => void = console.log): Promise<IngestSummary> {
-  const chunked = chunkCorpus(docs);
+  const chunked = chunkCorpus(docs, log);
   const total = chunked.reduce((s, d) => s + d.chunks.length, 0);
   log(`Chunked ${chunked.length} sources into ${total.toLocaleString()} chunks; embedding with ${embedder.name}...`);
 
@@ -36,7 +40,7 @@ export async function ingestCorpus(pool: DbPool, docs: CorpusDoc[], embedder: Em
     // The title and section go into the embedding, so a question can match either.
     const embeddings = await embedder.embed(chunks.map((c) => `${doc.title}\n${c.section}\n${c.content}`));
     items.push({
-      doc: { title: doc.title, url: doc.url, kind: doc.kind, collection, parent: doc.parent, fetchedAt: doc.fetchedAt, version: doc.fetchedAt.slice(0, 10) },
+      doc: { title: doc.title, url: doc.url, kind: doc.kind, collection, parent: doc.parent, fetchedAt: doc.fetchedAt, version: doc.fetchedAt.slice(0, 10), weight: sourceWeight(doc) },
       chunks,
       embeddings,
     });

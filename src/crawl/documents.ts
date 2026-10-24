@@ -7,7 +7,7 @@ export async function pdfSections(bytes: Uint8Array): Promise<{ title?: string; 
   const meta = await pdf.getMetadata().catch(() => null);
   const { text } = await extractText(pdf, { mergePages: false });
   const sections = text
-    .map((t, i) => ({ heading: `Page ${i + 1}`, page: i + 1, text: t.replace(/[ \t]+/g, " ").trim() }))
+    .map((t, i) => ({ heading: `Page ${i + 1}`, page: i + 1, text: t.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, " ").replace(/[ \t]+/g, " ").trim() }))
     .filter((s) => s.text.length > 0);
   const info = (meta?.info ?? {}) as { Title?: string };
   return { title: info.Title?.trim() || undefined, sections };

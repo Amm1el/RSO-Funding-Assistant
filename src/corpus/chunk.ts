@@ -10,6 +10,11 @@ export interface DocChunks {
   chunks: Chunk[];
 }
 
+/** Removes NUL and other control characters some PDFs contain (Postgres rejects NUL). */
+export function cleanText(text: string): string {
+  return text.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F\uFFFD]/g, " ");
+}
+
 /** Splits text into overlapping word windows. */
 function windows(text: string, maxWords: number, overlap: number): string[] {
   const words = text.split(/\s+/).filter(Boolean);
@@ -28,7 +33,8 @@ function windows(text: string, maxWords: number, overlap: number): string[] {
  * - Other PDFs are chunked across pages, keeping page numbers.
  * - Web pages, code books and meetings are chunked within each of their own sections.
  */
-export function docToChunks(doc: CorpusDoc, opts: { parentCollection?: CollectionId | null; maxWords?: number; overlapWords?: number } = {}): DocChunks {
+export function docToChunks(input: CorpusDoc, opts: { parentCollection?: CollectionId | null; maxWords?: number; overlapWords?: number } = {}): DocChunks {
+  const doc: CorpusDoc = { ...input, title: cleanText(input.title).trim(), sections: input.sections.map((s) => ({ ...s, heading: cleanText(s.heading), text: cleanText(s.text) })) };
   const maxWords = opts.maxWords ?? DEFAULT_MAX_WORDS;
   const overlapWords = opts.overlapWords ?? DEFAULT_OVERLAP_WORDS;
   const chunks: Chunk[] = [];
