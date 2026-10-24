@@ -9,7 +9,7 @@ import { loadEvalCases, scoreCase, summarize, type CaseResult } from "../evals.j
 
 /*
 Usage: npm run eval -- [options]
-  --generator auto|claude|extractive   default auto: Claude if ANTHROPIC_API_KEY is set
+  --generator auto|claude|ollama|extractive   default auto: Claude if ANTHROPIC_API_KEY is set
   --mode hybrid|vector                 retrieval mode (default hybrid)
   --judge                              also grade answers with an LLM judge (needs ANTHROPIC_API_KEY)
   --min-pass N / --min-retrieval N     exit 1 if pass rate / retrieval hit rate is below N (for CI)
@@ -35,8 +35,13 @@ const results: (CaseResult & { answer: string; judgeReason?: string })[] = [];
 for (const c of cases) {
   const collection = collectionFlag === "all" ? null : (collectionFlag ?? c.collection ?? null);
   const chunks = await retrieve(deps, c.question, undefined, mode, { collection });
+  // A model that returns malformed output fails that case, not the whole run.
+  let generatorError = "";
   const answer = chunks.length
-    ? finalizeAnswer(await deps.generator.generate(c.question, chunks), chunks)
+    ? await deps.generator.generate(c.question, chunks).then(
+        (raw) => finalizeAnswer(raw, chunks),
+        (err: Error) => ((generatorError = err.message.slice(0, 120)), { answerable: false, answer: "", citations: [] }),
+      )
     : { answerable: false, answer: "", citations: [] };
   const r: CaseResult & { answer: string; judgeReason?: string } = { ...scoreCase(c, chunks, answer), answer: answer.answer };
   if (judge && c.reference_answer) {
@@ -50,6 +55,7 @@ for (const c of cases) {
     r.citationCorrect === false ? "wrong section cited" : "",
     !r.answerableCorrect ? (c.answerable ? "refused" : "should have refused") : "",
     r.factsFound < r.factsTotal ? `facts ${r.factsFound}/${r.factsTotal}` : "",
+    generatorError ? `generator error: ${generatorError}` : "",
   ].filter(Boolean);
   console.log(`${r.pass ? "PASS" : "FAIL"}  ${c.id.padEnd(28)} ${notes.join(", ")}`);
 }

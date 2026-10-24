@@ -50,7 +50,8 @@ export class OllamaGenerator implements AnswerGenerator {
       model: this.model,
       stream: false,
       format: ANSWER_SCHEMA,
-      options: { temperature: 0 },
+      // Six passages plus instructions run ~2-3k tokens; older Ollama defaults (2048) cut them off.
+      options: { temperature: 0, num_ctx: 8192 },
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
         { role: "user", content: buildUserMessage(question, chunks) },
