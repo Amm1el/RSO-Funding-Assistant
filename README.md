@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/Amm1el/rso-funding-assistant/actions/workflows/ci.yml/badge.svg)](https://github.com/Amm1el/rso-funding-assistant/actions/workflows/ci.yml)
 
-Answers Florida State University students' questions about Student Government (SGA): funding, the Constitution and Statutes, elections, agencies, graduate student government (COGS), meetings and student resources. It searches everything SGA publishes, about 3,800 sources, and shows the exact passage behind every answer.
+Answers Florida State University students' questions about Student Government (SGA): funding, the Constitution and Statutes, elections, agencies, graduate student government (COGS), meetings and student resources. It searches everything SGA publishes, about 4,000 sources, and shows the exact passage behind every answer.
 
 I chair SGA's RSO Allocation Committee (RSOAC), which reviews funding requests from FSU's registered student organizations. Most questions we get each week are already answered somewhere SGA has published, but that might be one line in a 16-page manual, a chapter of the Statutes, or last month's meeting agenda. This tool finds the line, cites it, and says so when the sources don't cover a question.
 
@@ -75,6 +75,8 @@ Keyless results (offline embedder + extractive answers), from `evals/history.jso
 | + 16 RSOAC inbox questions (79 cases), Funding section | 3,777 | 37% | 87% | 0.79 |
 | + answerer weights rare words, quotes up to 3 sentences, Funding section | 3,777 | **49%** | 87% | 0.79 |
 | same, all sources | 3,777 | 38% | 84% | 0.72 |
+| + 213 scanned PDFs OCR'd, Funding section | 3,982 | 49% | 87% | 0.79 |
+| same, all sources | 3,982 | 34% | 81% | 0.70 |
 
 Growing the corpus 3,800× without losing retrieval quality is the main result of v0.3. The low pass rate is the extractive baseline's ceiling: it quotes sentences and can't tell when a question is off-topic (refusal 0–11%). Real student questions are harder still (2 of 16 pass) because students describe their situation instead of using the manual's terms. Closing those gaps is what the LLM answerer is for. **Next row:** `npm run eval -- --judge --record "..."` with AI on.
 

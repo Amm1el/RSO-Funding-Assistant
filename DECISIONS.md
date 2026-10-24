@@ -168,3 +168,9 @@ Profiling showed tokenizing 23,000 chunks (1.7 s) and the base64 decode (0.6 s) 
 
 ### 44. Local embedding models get their task prefixes
 `nomic-embed-text` is trained with `search_query:` / `search_document:` prefixes and loses quality without them. `embed()` now knows whether it's embedding a question or a passage, and the Ollama embedder adds the prefixes for nomic models.
+
+### 45. When the chair and the manual disagree, the test follows the manual and records the ruling
+In the first review pass, two of the chair's rulings contradicted the published 9/21/26 manual: the recorded presentation can run 7 minutes (manual: 5), and three quotes are needed at any price (manual: for each item over $1,000). The app can only cite what SGA publishes, so changing the test to expect "7 minutes" would make the eval fail for a correct citation of the official text. Instead the cases keep testing the published text and carry a `chair_note`. The fix belongs at the source: SGA updates the manual, the weekly crawl picks it up, Recent rule changes shows it, and the test is updated then.
+
+### 46. Adding 205 OCR'd documents cost a little on "All sources", and that's recorded, not tuned away
+With the OCR'd scans, the Funding section is unchanged (49% / 87% / 0.79), while all-sources dropped from 38% to 34% pass. Per-case diffs show borderline answers moving a rank or two as word rarity shifts across a bigger corpus, not OCR text winning (weighting OCR'd sources x0.6 changed nothing measurable). Making old scans searchable is worth that; the remaining fix for borderline ranking is a better embedder, which needs the AI mode.
