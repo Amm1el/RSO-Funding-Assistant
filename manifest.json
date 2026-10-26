@@ -1,0 +1,28 @@
+{
+  "crawledAt": "2026-10-26T17:28:32.062Z",
+  "counts": {
+    "site": {
+      "documents": 247,
+      "sections": 1137,
+      "chars": 468281
+    },
+    "code": {
+      "documents": 26,
+      "sections": 406,
+      "chars": 1272248
+    },
+    "documents": {
+      "documents": 2981,
+      "sections": 11839,
+      "chars": 15998427
+    },
+    "meetings": {
+      "documents": 954,
+      "sections": 1274,
+      "chars": 3924278
+    }
+  },
+  "errors": 48,
+  "ocr": 213,
+  "skippedByRobots": 1
+}
