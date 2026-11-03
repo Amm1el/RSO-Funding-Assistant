@@ -17,6 +17,10 @@ const ANSWER_SCHEMA = {
   properties: {
     citations: {
       type: "array",
+      // At least one: with evidence first, the model otherwise sometimes skips it ([]),
+      // and an answer with no citation is thrown out.
+      minItems: 1,
+      maxItems: 4,
       items: { type: "object", properties: { excerpt: { type: "integer" }, quote: { type: "string" } }, required: ["excerpt", "quote"] },
     },
     answer: { type: "string" },

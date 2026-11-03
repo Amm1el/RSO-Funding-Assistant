@@ -1,6 +1,6 @@
 # Re-runs only the AI evals (local Ollama model), after local-ai.ps1 has set everything up.
 # Updates the code first, then scores the four configurations. Log: ai-evals.log
-param([string]$Model = "qwen2.5:7b", [string]$EmbedModel = "nomic-embed-text", [string]$Note = "")
+param([string]$Model = "qwen2.5:7b", [string]$EmbedModel = "nomic-embed-text", [string]$Note = "", [int]$K = 6)
 $ErrorActionPreference = "Continue"
 $root = Resolve-Path (Join-Path $PSScriptRoot $(if (Test-Path (Join-Path $PSScriptRoot "package.json")) { "." } else { "..\.." }))
 Set-Location $root
@@ -28,7 +28,7 @@ try {
     $label = "$embed retrieval"
     foreach ($col in @("funding", "all")) {
       Step "Eval: $Model answers, $label, $col"
-      npx tsx src/cli/eval.ts --generator ollama --collection $col --record "local $Model answers, $label, $col (Windows)$suffix"
+      npx tsx src/cli/eval.ts --generator ollama --collection $col --k $K --record "local $Model answers, $label, $col, k=$K (Windows)$suffix"
       if ($LASTEXITCODE -ne 0) { throw "The eval didn't run; see above." }
     }
   }

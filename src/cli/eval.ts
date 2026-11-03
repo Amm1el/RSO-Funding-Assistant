@@ -22,6 +22,8 @@ const mode = (flag("--mode") ?? "hybrid") as RetrievalMode;
 const minPass = Number(flag("--min-pass") ?? 0);
 const minRetrieval = Number(flag("--min-retrieval") ?? 0);
 const note = flag("--record");
+/** Passages given to the answerer (default 6). */
+const topK = flag("--k") ? Number(flag("--k")) : undefined;
 /** Search one section only (e.g. funding); default: each case's own collection, else all sources. */
 const collectionFlag = flag("--collection");
 const judge = args.includes("--judge") ? new ClaudeJudge() : null;
@@ -36,7 +38,7 @@ console.log(`Evaluating ${cases.length} cases: ${deps.embedder.name} retrieval (
 const results: (CaseResult & { answer: string; judgeReason?: string; rawCitations?: unknown })[] = [];
 for (const c of cases) {
   const collection = collectionFlag === "all" ? null : (collectionFlag ?? c.collection ?? null);
-  const chunks = await retrieve(deps, c.question, undefined, mode, { collection });
+  const chunks = await retrieve(deps, c.question, topK, mode, { collection });
   // A model that returns malformed output fails that case, not the whole run.
   let generatorError = "";
   let rawCitations: { excerpt: number; quote: string }[] | undefined;
@@ -48,7 +50,13 @@ for (const c of cases) {
     : { answerable: false, answer: "", citations: [] };
   const r: CaseResult & { answer: string; judgeReason?: string; rawCitations?: unknown } = { ...scoreCase(c, chunks, answer), answer: answer.answer };
   // When the citation check rejected everything, keep what the model cited, to see why.
-  if (rawCitations?.length && !answer.citations.length) r.rawCitations = rawCitations;
+  if (rawCitations && !answer.citations.length && answer.answerable !== c.answerable) r.rawCitations = rawCitations;
+  // For retrieval misses: where the expected section sits among all 40 candidates, if at all.
+  if (r.retrievalHit === false) {
+    const deep = await retrieve(deps, c.question, 40, mode, { collection });
+    const at = deep.findIndex((x) => x.section.toLowerCase().includes(c.expected_section.toLowerCase()));
+    (r as { depthRank?: number | null }).depthRank = at >= 0 ? at + 1 : null;
+  }
   if (judge && c.reference_answer) {
     const verdict = await judge.judge(c.question, c.reference_answer, answer.answerable ? answer.answer : "(refused: not covered by the manual)");
     r.judgeCorrect = verdict.correct;
@@ -56,7 +64,7 @@ for (const c of cases) {
   }
   results.push(r);
   const notes = [
-    r.retrievalHit === false ? "retrieval miss" : "",
+    r.retrievalHit === false ? `retrieval miss (${(r as { depthRank?: number | null }).depthRank ? "found at #" + (r as { depthRank?: number | null }).depthRank : "not in top 40"})` : "",
     r.citationCorrect === false ? "wrong section cited" : "",
     !r.answerableCorrect ? (c.answerable ? "refused" : "should have refused") : "",
     r.factsFound < r.factsTotal ? `facts ${r.factsFound}/${r.factsTotal}` : "",
@@ -70,7 +78,7 @@ const summary = summarize(results);
 console.log("");
 console.table(summary);
 
-const config = { embedder: deps.embedder.name, mode, generator: deps.generator.name, judge: Boolean(judge), collection: collectionFlag ?? "per-case", sources: deps.corpus.documents };
+const config = { embedder: deps.embedder.name, mode, k: topK ?? 6, generator: deps.generator.name, judge: Boolean(judge), collection: collectionFlag ?? "per-case", sources: deps.corpus.documents };
 const stamp = new Date().toISOString();
 await mkdir("evals/results", { recursive: true });
 const file = `evals/results/${stamp.slice(0, 19).replace(/:/g, "")}-${deps.generator.name.replace(/[:/]/g, "_")}.json`;
