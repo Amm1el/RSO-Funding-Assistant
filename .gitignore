@@ -10,3 +10,4 @@ evals/results/
 !data/.gitkeep
 web/src/generated/corpus-data.ts
 local-ai.log
+ai-evals.log

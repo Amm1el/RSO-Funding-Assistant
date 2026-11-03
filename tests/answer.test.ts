@@ -29,6 +29,26 @@ describe("validateCitations", () => {
     expect(validateCitations([{ excerpt: 7, quote: "anything" }], chunks)).toEqual([]);
   });
 
+  it("tolerates copying slips: punctuation, bullets, and the store keeps the passage's own text", () => {
+    const [c] = validateCitations([{ excerpt: 1, quote: "Daily hotel rate should not exceed 225 per night" }], chunks);
+    expect(c?.quote).toBe("Daily hotel rate should not exceed $225 per night");
+  });
+
+  it("moves a citation to the retrieved passage that actually contains the quote", () => {
+    const [c] = validateCitations([{ excerpt: 1, quote: "food for meetings with under 10" }], chunks);
+    expect(c?.section).toBe(chunks[1].section);
+  });
+
+  it("accepts '...' only when every part is in the same passage", () => {
+    expect(validateCitations([{ excerpt: 1, quote: "Daily hotel rate ... $225 per night" }], chunks)).toHaveLength(1);
+    expect(validateCitations([{ excerpt: 1, quote: "Daily hotel rate ... food for meetings" }], chunks)).toEqual([]);
+  });
+
+  it("still rejects reworded quotes", () => {
+    expect(validateCitations([{ excerpt: 1, quote: "hotels can cost up to $225 a night" }], chunks)).toEqual([]);
+    expect(validateCitations([{ excerpt: 1, quote: "rate should not exceed $250 per night" }], chunks)).toEqual([]);
+  });
+
   it("ignores whitespace and case differences", () => {
     expect(validateCitations([{ excerpt: 2, quote: "food  for MEETINGS with under 10" }], chunks)).toHaveLength(1);
   });

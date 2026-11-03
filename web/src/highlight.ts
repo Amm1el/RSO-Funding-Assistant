@@ -1,11 +1,12 @@
 /**
  * Splits a passage into plain and highlighted segments, marking each quote wherever it
- * appears. Matching ignores case and whitespace, the same rule the server uses to
- * verify citations, so every verified quote can be found.
+ * appears. Verified quotes are the passage's own text (src/citations.ts), so matching
+ * only needs to ignore case and whitespace; a quote joined with " … " is highlighted part
+ * by part.
  */
 export function highlight(content: string, quotes: string[]): { text: string; marked: boolean }[] {
   const ranges: [number, number][] = [];
-  for (const quote of quotes) {
+  for (const quote of quotes.flatMap((q) => q.split(" \u2026 "))) {
     const words = quote.trim().split(/\s+/).filter(Boolean);
     if (!words.length) continue;
     const pattern = new RegExp(words.map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("\\s+"), "i");
