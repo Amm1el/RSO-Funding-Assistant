@@ -44,6 +44,15 @@ describe("validateCitations", () => {
     expect(validateCitations([{ excerpt: 1, quote: "Daily hotel rate ... food for meetings" }], chunks)).toEqual([]);
   });
 
+  it("accepts unmarked skips only when every piece is at least four exact words, in order", () => {
+    const [c] = validateCitations([{ excerpt: 1, quote: "Daily hotel rate should not exceed Each room is expected to host four travelers" }], chunks);
+    expect(c?.quote).toBe("Daily hotel rate should not exceed \u2026 Each room is expected to host four travelers");
+    // Dropping a single word ("not") would leave a one-word piece: rejected.
+    expect(validateCitations([{ excerpt: 1, quote: "Daily hotel rate should exceed $225 per night" }], chunks)).toEqual([]);
+    // Pieces out of order: rejected.
+    expect(validateCitations([{ excerpt: 1, quote: "Each room is expected to host Daily hotel rate should not" }], chunks)).toEqual([]);
+  });
+
   it("still rejects reworded quotes", () => {
     expect(validateCitations([{ excerpt: 1, quote: "hotels can cost up to $225 a night" }], chunks)).toEqual([]);
     expect(validateCitations([{ excerpt: 1, quote: "rate should not exceed $250 per night" }], chunks)).toEqual([]);

@@ -17,6 +17,11 @@ export const EvalCase = z.object({
   category: z.enum(["lookup", "number", "multi", "refuse"]).optional(),
   /** The app section a user would ask this in; the eval searches only that section unless --collection all. */
   collection: z.string().optional(),
+  /**
+   * Run the case only when searching this section. For refusals written against the manual
+   * ("the manual doesn't list meeting dates") that other sources do answer.
+   */
+  scope: z.string().optional(),
   /** Where the case came from, e.g. "manual" (drafted from the text) or "rsoac-inbox" (a real question, paraphrased). */
   origin: z.string().optional(),
   /**

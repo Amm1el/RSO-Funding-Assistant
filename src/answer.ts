@@ -11,6 +11,8 @@ Rules:
 - "answerable" is about the SOURCES, not about yes or no: true when the excerpts state the answer, false when they don't. A question whose answer is "No, that's prohibited" IS answerable (true).
 - Only answer what a cited phrase directly states. Never infer a "yes" from the excerpts being silent; if they don't say, set answerable to false and say what the sources don't cover.
 - Write 1 to 3 complete sentences: the direct answer AND the rule, amount, deadline or office behind it, e.g. "No. Food for meetings with under 10 attendees is a prohibited purchase." Never reply with only "Yes" or "No". Put any list in the sentence instead of ending with a colon.
+- The excerpts cover FSU only. If the question is about another school, set answerable to false and say the sources only cover FSU.
+- Officeholders change every year. Only name who currently holds a role if an SGA web page (not meeting minutes, bills or letters) says so; otherwise give the office's email or contact.
 - When excerpts disagree, prefer the governing document (Constitution over Statutes over manuals and web pages; newer over older) and mention the other figure, e.g. "The Statutes cap hotels at $300 per room; the Financial Manual sets $225 per night."`;
 
 /** Formats retrieved chunks as numbered excerpts the model can cite, each with its source. */

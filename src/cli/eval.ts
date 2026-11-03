@@ -26,7 +26,9 @@ const note = flag("--record");
 const collectionFlag = flag("--collection");
 const judge = args.includes("--judge") ? new ClaudeJudge() : null;
 
-const cases = await loadEvalCases("evals/questions.jsonl");
+const cases = (await loadEvalCases("evals/questions.jsonl")).filter(
+  (c) => !c.scope || collectionFlag === undefined || collectionFlag === c.scope,
+);
 const pool = createPool();
 const deps = await createDeps(pool, generatorChoice);
 console.log(`Evaluating ${cases.length} cases: ${deps.embedder.name} retrieval (${mode}), ${deps.generator.name} answers\n`);

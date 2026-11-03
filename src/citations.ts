@@ -24,16 +24,53 @@ function tokens(text: string): { norm: string; start: number; end: number }[] {
   return out;
 }
 
-/** Where a run of words appears in a passage, as the passage's own text, or null. */
+/** Shortest piece of a quote that may stand alone when the model skipped words between pieces. */
+const MIN_PIECE_WORDS = 4;
+/** A skipped stretch must be at least this long (one dropped word is a typo or a trick)... */
+const MIN_SKIP_WORDS = 2;
+const MAX_SKIP_WORDS = 40;
+/** ...and may never contain a word that flips or narrows meaning. */
+const MEANING_WORDS = new Set(["not", "no", "never", "cannot", "cant", "can't", "nor", "none", "except", "unless", "without", "only", "prohibited", "may", "must", "shall"]);
+
+/**
+ * Where a quote appears in a passage, as the passage's own text, or null. Either the whole
+ * quote is one exact run of words, or the model skipped words without marking it: then the
+ * quote must split into pieces of at least MIN_PIECE_WORDS exact words, in the passage's
+ * order, and each skipped stretch must be 2-40 words with no word that flips or narrows
+ * meaning ("not", "except", "only", "must"...), so a skip can't turn "should not exceed"
+ * into "should exceed". Skipped stretches are shown as " … ".
+ */
 function findSpan(content: string, contentTokens: ReturnType<typeof tokens>, quote: string): string | null {
   const q = tokens(quote).map((t) => t.norm);
   if (!q.length) return null;
-  outer: for (let i = 0; i + q.length <= contentTokens.length; i++) {
-    for (let j = 0; j < q.length; j++) if (contentTokens[i + j].norm !== q[j]) continue outer;
-    // The passage's own words, without punctuation hanging off either end.
-    return content.slice(contentTokens[i].start, contentTokens[i + q.length - 1].end).replace(/^[^\w$]+|[^\w%)]+$/g, "");
+  const text = (a: number, b: number) => content.slice(contentTokens[a].start, contentTokens[b].end).replace(/^[^\w$]+|[^\w%)]+$/g, "");
+  // Longest exact run of q[from..] starting at or after content position `pos`.
+  const longest = (from: number, pos: number) => {
+    let best = { at: -1, len: 0 };
+    for (let i = pos; i < contentTokens.length; i++) {
+      let len = 0;
+      while (from + len < q.length && i + len < contentTokens.length && contentTokens[i + len].norm === q[from + len]) len++;
+      if (len > best.len) best = { at: i, len };
+      if (from + len === q.length && len === best.len) break;
+    }
+    return best;
+  };
+  const whole = longest(0, 0);
+  if (whole.len === q.length) return text(whole.at, whole.at + q.length - 1);
+  const pieces: string[] = [];
+  for (let from = 0, pos = 0; from < q.length; ) {
+    const run = longest(from, pos);
+    if (run.len < Math.min(MIN_PIECE_WORDS, q.length - from) || run.len === 0) return null;
+    if (q.length - from - run.len > 0 && run.len < MIN_PIECE_WORDS) return null;
+    if (pieces.length) {
+      const skipped = contentTokens.slice(pos, run.at);
+      if (skipped.length < MIN_SKIP_WORDS || skipped.length > MAX_SKIP_WORDS || skipped.some((t) => MEANING_WORDS.has(t.norm))) return null;
+    }
+    pieces.push(text(run.at, run.at + run.len - 1));
+    from += run.len;
+    pos = run.at + run.len;
   }
-  return null;
+  return pieces.join(" \u2026 ");
 }
 
 /**
