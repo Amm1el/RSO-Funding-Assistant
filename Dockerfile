@@ -27,8 +27,8 @@ COPY --from=web /app/web/dist web/dist
 # data/corpus is the crawl (refresh with npm run corpus:pull before building). The manual PDF
 # is the fallback when there's no crawl: used if present in the build context, else downloaded.
 COPY data data
-ARG MANUAL_URL=https://sga.fsu.edu/sites/default/files/PDFs/Accounting/26-27SGAFM.pdf
-RUN [ -f data/26-27SGAFM.pdf ] || curl -fsSL -o data/26-27SGAFM.pdf "$MANUAL_URL"
+ARG MANUAL_URL=https://sga.fsu.edu/sites/default/files/PDFs/Accounting/26-27SGAFM-updated-9.21.26.pdf
+RUN [ -f data/26-27SGAFM.pdf ] || curl -fsSL -o data/26-27SGAFM.pdf "$MANUAL_URL" || echo "Manual download failed; the image will use data/corpus."
 USER node
 EXPOSE 3000
 CMD ["sh", "scripts/start.sh"]

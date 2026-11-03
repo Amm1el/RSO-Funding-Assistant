@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 env:
-  MANUAL_URL: https://sga.fsu.edu/sites/default/files/PDFs/Accounting/26-27SGAFM.pdf
+  MANUAL_URL: https://sga.fsu.edu/sites/default/files/PDFs/Accounting/26-27SGAFM-updated-9.21.26.pdf
 
 jobs:
   # Every push: types, unit + pgvector integration tests, web build, and the keyless eval.
@@ -31,7 +31,9 @@ jobs:
           cache: npm
       - run: npm ci
       - name: Download the 2026-27 manual
-        run: curl -fsSL -o data/26-27SGAFM.pdf "$MANUAL_URL"
+        # Optional: the crawled corpus has the manual too, and tests that need this file skip
+        # without it. SGA removes old editions (the original 26-27SGAFM.pdf went 404 in Nov 2026).
+        run: curl -fsSL -o data/26-27SGAFM.pdf "$MANUAL_URL" || echo "::warning::Couldn't download the manual from $MANUAL_URL; using the crawled corpus only."
       # The weekly crawl's output (corpus-data branch). The eval set follows the current,
       # updated manual and asks about the statutes, so it needs the crawled sources.
       - name: Pull the crawled corpus
