@@ -7,7 +7,9 @@
 #   4. runs the evals: offline retrieval + local answers, then local retrieval + local answers
 #   5. sets .env so the app uses local AI (set USE_AI=false to switch back)
 param([string]$Model = "qwen2.5:7b", [string]$EmbedModel = "nomic-embed-text")
-$ErrorActionPreference = "Stop"
+# "Continue", not "Stop": Windows PowerShell 5.1 turns any stderr line from git or npm
+# (even a warning) into a fatal error under "Stop". Failures are caught by exit codes below.
+$ErrorActionPreference = "Continue"
 $root = Resolve-Path (Join-Path $PSScriptRoot $(if (Test-Path (Join-Path $PSScriptRoot "package.json")) { "." } else { "..\.." }))
 Set-Location $root
 Start-Transcript -Path (Join-Path $root "local-ai.log") -Force | Out-Null
@@ -21,7 +23,7 @@ try {
 
   Step "Update the code"
   if (Get-Command git -ErrorAction SilentlyContinue) {
-    git stash push -m "before local-ai update" -- package-lock.json 2>$null
+    git -c core.autocrlf=false stash push -m "before local-ai update" -- package-lock.json
     git pull --ff-only
     if ($LASTEXITCODE -ne 0) { throw "git pull failed; see above." }
     git log --oneline -1
@@ -46,6 +48,7 @@ try {
 
   Step "Latest crawl"
   npm run corpus:pull
+  if ($LASTEXITCODE -ne 0) { throw "Couldn't download the crawled sources." }
 
   $env:DATABASE_URL = "pglite://data/pglite"
   $env:USE_AI = "true"
@@ -60,6 +63,7 @@ try {
 
   Step "Eval: offline retrieval + $Model answers"
   npx tsx src/cli/eval.ts --generator ollama --collection funding --record "local $Model answers, offline retrieval (Windows)"
+  if ($LASTEXITCODE -ne 0) { throw "The eval didn't run; see above." }
   npx tsx src/cli/eval.ts --generator ollama --collection all --record "local $Model answers, offline retrieval, all sources (Windows)"
 
   Step "Index with $EmbedModel embeddings (the slow part)"
