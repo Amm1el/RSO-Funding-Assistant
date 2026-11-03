@@ -8,6 +8,8 @@ Start-Transcript -Path (Join-Path $root "ai-evals.log") -Force | Out-Null
 function Step($m) { Write-Host "`n=== $(Get-Date -Format HH:mm:ss) $m" -ForegroundColor Yellow }
 try {
   Step "Update the code"
+  # Local score rows and lockfile edits would block the pull; the rows are already upstream.
+  git stash push -m "before ai-evals update" -- evals/history.jsonl package-lock.json
   git pull --ff-only
   if ($LASTEXITCODE -ne 0) { throw "git pull failed; see above." }
   npm install --no-audit --no-fund
