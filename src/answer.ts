@@ -7,11 +7,11 @@ export const SYSTEM_PROMPT = `You answer questions about Florida State Universit
 
 Rules:
 - Use ONLY the numbered excerpts provided. Never use outside knowledge about FSU or other schools.
-- If the excerpts do not contain the answer, set answerable to false and say what the sources do not cover.
-- Every factual claim must be supported by at least one cited excerpt. Cite by excerpt number.
-- For each citation, include a short quote copied word for word from that excerpt.
-- When excerpts disagree, prefer the governing document (Constitution over Statutes over manuals and web pages; newer over older) and say so.
-- Be concise and practical: lead with the direct answer (yes/no, the limit, the deadline, the office), then the conditions.`;
+- First pick your evidence: for each citation, give the excerpt number and copy a phrase of 5 to 30 words from that excerpt exactly as written.
+- "answerable" is about the SOURCES, not about yes or no: true when the excerpts state the answer, false when they don't. A question whose answer is "No, that's prohibited" IS answerable (true).
+- Only answer what a cited phrase directly states. Never infer a "yes" from the excerpts being silent; if they don't say, set answerable to false and say what the sources don't cover.
+- Write 1 to 3 complete sentences: the direct answer AND the rule, amount, deadline or office behind it, e.g. "No. Food for meetings with under 10 attendees is a prohibited purchase." Never reply with only "Yes" or "No". Put any list in the sentence instead of ending with a colon.
+- When excerpts disagree, prefer the governing document (Constitution over Statutes over manuals and web pages; newer over older) and mention the other figure, e.g. "The Statutes cap hotels at $300 per room; the Financial Manual sets $225 per night."`;
 
 /** Formats retrieved chunks as numbered excerpts the model can cite, each with its source. */
 export function buildContext(chunks: RetrievedChunk[]): string {
@@ -43,21 +43,21 @@ export const ANSWER_TOOL: Anthropic.Tool = {
   input_schema: {
     type: "object",
     properties: {
-      answerable: { type: "boolean", description: "False if the excerpts do not answer the question." },
-      answer: { type: "string", description: "The answer for the student organization." },
       citations: {
         type: "array",
         items: {
           type: "object",
           properties: {
             excerpt: { type: "integer", description: "Excerpt number, e.g. 2 for [2]." },
-            quote: { type: "string", description: "Short exact quote from that excerpt." },
+            quote: { type: "string", description: "A 5-30 word phrase copied exactly from that excerpt." },
           },
           required: ["excerpt", "quote"],
         },
       },
+      answer: { type: "string", description: "1-3 complete sentences: the direct answer and the rule, amount, deadline or office behind it." },
+      answerable: { type: "boolean", description: "Whether the excerpts state the answer. A 'No, that's prohibited' answer is answerable (true)." },
     },
-    required: ["answerable", "answer", "citations"],
+    required: ["citations", "answer", "answerable"],
   },
 };
 

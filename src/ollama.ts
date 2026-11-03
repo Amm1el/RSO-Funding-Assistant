@@ -12,15 +12,17 @@ import type { RetrievedChunk } from "./types.js";
 /** The same answer shape Claude is forced into, as a JSON schema for Ollama's structured output. */
 const ANSWER_SCHEMA = {
   type: "object",
+  // Ollama generates fields in this order: evidence first, then the answer written from
+  // it, then the coverage judgment. (Answer-first let the model write before it looked.)
   properties: {
-    answerable: { type: "boolean" },
-    answer: { type: "string" },
     citations: {
       type: "array",
       items: { type: "object", properties: { excerpt: { type: "integer" }, quote: { type: "string" } }, required: ["excerpt", "quote"] },
     },
+    answer: { type: "string" },
+    answerable: { type: "boolean" },
   },
-  required: ["answerable", "answer", "citations"],
+  required: ["citations", "answer", "answerable"],
 };
 
 async function ollama<T>(path: string, body: unknown): Promise<T> {

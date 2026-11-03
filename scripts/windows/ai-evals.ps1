@@ -21,9 +21,11 @@ try {
   $env:DATABASE_URL = "pglite://data/pglite"; $env:USE_AI = "true"; $env:LOCAL_MODEL = $Model
   $env:ANTHROPIC_API_KEY = ""; $env:OPENAI_API_KEY = ""
   $suffix = if ($Note) { "; $Note" } else { "" }
-  foreach ($embed in @("", $EmbedModel)) {
+  # Only the local-embedding setup: clearing LOCAL_EMBEDDING_MODEL here doesn't work, because
+  # the app then reads it from .env (local-ai.ps1 sets it there).
+  foreach ($embed in @($EmbedModel)) {
     $env:LOCAL_EMBEDDING_MODEL = $embed
-    $label = if ($embed) { "$embed retrieval" } else { "offline retrieval" }
+    $label = "$embed retrieval"
     foreach ($col in @("funding", "all")) {
       Step "Eval: $Model answers, $label, $col"
       npx tsx src/cli/eval.ts --generator ollama --collection $col --record "local $Model answers, $label, $col (Windows)$suffix"

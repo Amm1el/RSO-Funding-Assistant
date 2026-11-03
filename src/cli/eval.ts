@@ -31,19 +31,22 @@ const pool = createPool();
 const deps = await createDeps(pool, generatorChoice);
 console.log(`Evaluating ${cases.length} cases: ${deps.embedder.name} retrieval (${mode}), ${deps.generator.name} answers\n`);
 
-const results: (CaseResult & { answer: string; judgeReason?: string })[] = [];
+const results: (CaseResult & { answer: string; judgeReason?: string; rawCitations?: unknown })[] = [];
 for (const c of cases) {
   const collection = collectionFlag === "all" ? null : (collectionFlag ?? c.collection ?? null);
   const chunks = await retrieve(deps, c.question, undefined, mode, { collection });
   // A model that returns malformed output fails that case, not the whole run.
   let generatorError = "";
+  let rawCitations: { excerpt: number; quote: string }[] | undefined;
   const answer = chunks.length
     ? await deps.generator.generate(c.question, chunks).then(
-        (raw) => finalizeAnswer(raw, chunks),
+        (raw) => ((rawCitations = raw.citations), finalizeAnswer(raw, chunks)),
         (err: Error) => ((generatorError = err.message.slice(0, 120)), { answerable: false, answer: "", citations: [] }),
       )
     : { answerable: false, answer: "", citations: [] };
-  const r: CaseResult & { answer: string; judgeReason?: string } = { ...scoreCase(c, chunks, answer), answer: answer.answer };
+  const r: CaseResult & { answer: string; judgeReason?: string; rawCitations?: unknown } = { ...scoreCase(c, chunks, answer), answer: answer.answer };
+  // When the citation check rejected everything, keep what the model cited, to see why.
+  if (rawCitations?.length && !answer.citations.length) r.rawCitations = rawCitations;
   if (judge && c.reference_answer) {
     const verdict = await judge.judge(c.question, c.reference_answer, answer.answerable ? answer.answer : "(refused: not covered by the manual)");
     r.judgeCorrect = verdict.correct;

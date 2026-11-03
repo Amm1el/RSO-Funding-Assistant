@@ -24,7 +24,8 @@ describe("Ollama (local AI, no API key)", () => {
     const raw = await new OllamaGenerator("qwen2.5:7b").generate("hotel limit?", [chunk]);
     expect(sent.url).toBe("http://localhost:11434/api/chat");
     expect(sent.body).toMatchObject({ model: "qwen2.5:7b", stream: false, options: { temperature: 0 } });
-    expect(sent.body.format.required).toEqual(["answerable", "answer", "citations"]);
+    // Evidence first, then the answer, then the coverage judgment (generation follows this order).
+    expect(Object.keys(sent.body.format.properties)).toEqual(["citations", "answer", "answerable"]);
     expect(sent.body.messages[1].content).toContain("Source: 2026-27 RSO Financial Manual");
     expect(finalizeAnswer(raw, [chunk])).toMatchObject({ answerable: true, citations: [{ section: "LODGING", pages: "12" }] });
   });
